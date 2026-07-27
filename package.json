@@ -1,0 +1,8 @@
+{
+  "name": "fuse-ops",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "redis": "^4.7.0"
+  }
+}
