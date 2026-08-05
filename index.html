@@ -1,0 +1,2998 @@
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --canvas:#F4F5F8; --surface:#fff; --surface-2:#FAFBFC;
+  --ink:#131726; --ink-2:#3A425B; --muted:#737D94;
+  --line:#E3E6EE; --line-2:#EEF0F5;
+  --azul:#2B3E8F; --azul-soft:#EDF0FB;
+  --ambar:#B47614; --ambar-soft:#FBF3E2;
+  --rojo:#C0392B; --rojo-soft:#FCEEEC;
+  --verde:#12795A; --verde-soft:#E9F5F0;
+  --display:'Archivo',sans-serif; --body:'Inter',system-ui,sans-serif; --mono:'IBM Plex Mono',monospace;
+  --r:12px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--canvas);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+/* cada perfil con su ambiente: emprendedor neutro, sensor azulado, analista verdoso */
+body[data-perfil="sensor"]{--canvas:#EDF1FA;--surface-2:#F6F8FD}
+body[data-perfil="sensor"] header{border-top:3px solid var(--azul)}
+body[data-perfil="analista"]{--canvas:#ECF3EF;--surface-2:#F5FAF7}
+body[data-perfil="analista"] header{border-top:3px solid var(--verde)}
+button,input,select,textarea{font-family:inherit;font-size:15px}
+:focus-visible{outline:2px solid var(--azul);outline-offset:2px;border-radius:5px}
+.hide{display:none!important}
+h1{font-family:var(--display);font-weight:700;font-size:21px;letter-spacing:-.3px;margin:0 0 4px}
+h2{font-family:var(--display);font-weight:600;font-size:16px;margin:0 0 3px}
+.eyebrow{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)} .sm{font-size:13px} .xs{font-size:11.5px} .mono{font-family:var(--mono)}
+.wrap{max-width:760px;margin:0 auto;padding:14px 14px 110px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px;margin-bottom:12px}
+.card.critico{border-color:#EBB6AD;box-shadow:0 1px 2px rgba(192,57,43,.08),0 10px 24px -18px rgba(192,57,43,.55)}
+.card.resuelto{opacity:.72}
+.empty{padding:26px 16px;text-align:center;color:var(--muted);font-size:13.5px;border:1px dashed var(--line);border-radius:var(--r);background:var(--surface-2);margin-bottom:12px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;text-transform:uppercase;padding:3px 8px;border-radius:99px;background:var(--canvas);color:var(--muted);border:1px solid var(--line)}
+.chip.azul{background:var(--azul-soft);color:var(--azul);border-color:#D7DEF6}
+.chip.rojo{background:var(--rojo-soft);color:var(--rojo);border-color:#F3D3CE}
+.chip.verde{background:var(--verde-soft);color:var(--verde);border-color:#CFE7DE}
+.chip.ambar{background:var(--ambar-soft);color:var(--ambar);border-color:#EEDFBD}
+.btn{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:9px;padding:10px 14px;font-size:14px;font-weight:500;cursor:pointer}
+.btn:hover{background:var(--surface-2)}
+.btn.primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+.btn.primary:hover{background:#242b47}
+.btn.rec{background:var(--rojo);color:#fff;border-color:var(--rojo)}
+.btn.quiet{border-color:transparent;color:var(--muted)}
+.btn.quiet:hover{color:var(--ink)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+label.f{display:block;margin-bottom:11px}
+label.f>span{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+input,select,textarea{width:100%;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:11px 12px}
+textarea{resize:vertical}
+.req{color:var(--rojo)}
+.seg{display:flex;gap:6px;border:1px solid var(--line);border-radius:99px;padding:4px;background:var(--canvas)}
+.seg button{flex:1;border:0;background:none;border-radius:99px;padding:9px 10px;font-size:13.5px;font-weight:500;color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.seg.prio button[aria-pressed="true"].p-alta{background:var(--rojo)}
+.seg.prio button[aria-pressed="true"].p-media{background:var(--ambar)}
+.seg.prio button[aria-pressed="true"].p-baja{background:var(--ink)}
+
+/* gate */
+#gate{min-height:100vh;background:#fff;color:var(--ink);display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.gate-in{width:100%;max-width:560px}
+.gbrand{font-family:var(--display);font-weight:700;font-size:19px;color:#000;letter-spacing:-.2px}
+.gbrand em{font-style:normal;color:#1B2A6B}
+.gh{font-family:var(--display);font-weight:700;font-size:clamp(24px,5vw,31px);letter-spacing:-.6px;margin:18px 0 6px;line-height:1.15;color:var(--ink)}
+.gp{color:var(--muted);margin:0 0 22px;font-size:14px}
+.gcards{display:grid;gap:10px}
+.gcard{text-align:left;background:#F1F3F7;border:1px solid #E1E5EC;color:var(--ink);border-radius:13px;padding:16px;cursor:pointer;transition:.15s}
+.gcard:hover{background:#E8ECF3;border-color:#CDD4E0}
+.gcard b{font-family:var(--display);font-size:16px;font-weight:600;display:block;margin-bottom:3px;color:var(--ink)}
+.gcard span{font-size:13px;color:var(--muted)}
+.gback{background:none;border:0;color:var(--muted);font-size:13px;cursor:pointer;padding:0;margin-top:16px}
+.gback:hover{color:var(--ink)}
+.gate label.f>span{color:var(--muted)}
+.gate input{background:#fff;border-color:var(--line);color:var(--ink)}
+.gate input::placeholder{color:#9AA3B5}
+
+
+/* tareas fijas */
+.barra{height:8px;background:var(--line-2);border-radius:99px;overflow:hidden}
+.barra i{display:block;height:100%;background:var(--verde);border-radius:99px;transition:width .3s}
+.row-av{display:flex;justify-content:space-between;align-items:baseline;margin-top:6px}
+.row-av .pct{font-family:var(--display);font-weight:700;font-size:20px}
+.tarea{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line-2)}
+.tarea:last-child{border-bottom:0}
+.tarea .txt{flex:1;min-width:0;font-size:14.5px}
+.tarea .txt small{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+.tarea.ok .txt>div{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--line)}
+.marca{width:26px;height:26px;flex:0 0 auto;border-radius:8px;border:1.5px solid var(--line);background:var(--surface);
+  color:#fff;font-size:14px;line-height:1;cursor:pointer;display:grid;place-items:center;margin-top:1px}
+.marca:hover{border-color:var(--verde)}
+.marca.on{background:var(--verde);border-color:var(--verde)}
+.tarea .ord{display:flex;flex-direction:column;gap:2px}
+.tarea .ord button{padding:2px 6px;line-height:1.1;font-size:11px}
+.pers{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);
+  border-radius:99px;padding:8px 14px;font-size:13.5px;cursor:pointer;font-family:inherit;color:inherit;line-height:1.2}
+.pers.edit{padding-right:8px;cursor:default}
+.pers.mas{border-style:dashed;color:var(--azul);border-color:#C6D0EE;background:var(--azul-soft)}
+.pers.mas:hover{background:#E2E8F8}
+.pers.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pers .x{border:0;background:none;color:inherit;opacity:.5;cursor:pointer;font-size:12px;padding:0 2px}
+.pers .x:hover{opacity:1;color:var(--rojo)}
+.areaBtn{display:block}
+.areaBtn:hover{border-color:#CCD3E2}
+.btn.xs{font-size:12px;padding:5px 9px}
+
+
+/* resumen compacto del emprendedor: 3 columnas horizontales */
+.res3{display:grid;grid-template-columns:repeat(3,1fr);padding:0;overflow:hidden}
+.rcol{border:0;background:none;border-right:1px solid var(--line-2);padding:11px 6px 10px;text-align:center;cursor:pointer;font-family:inherit;color:inherit}
+.rcol:last-child{border-right:0}
+.rcol:hover{background:var(--surface-2)}
+.rnum{font-family:var(--display);font-weight:700;font-size:21px;line-height:1;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.rnum .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.rlab{display:block;font-size:11px;color:var(--muted);margin-top:3px;line-height:1.3}
+
+/* selección de sustento (analista) */
+.paso{display:flex;align-items:baseline;gap:8px;margin:0 0 10px}
+.paso .n{font-family:var(--mono);font-size:11px;background:var(--ink);color:#fff;border-radius:6px;padding:2px 7px;flex:0 0 auto}
+.paso b{font-size:14px}
+.regsel{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--line-2)}
+.regsel:last-child{border-bottom:0}
+.regsel input{width:20px;height:20px;margin-top:2px;flex:0 0 auto;accent-color:var(--azul)}
+.regsel .cuerpo{flex:1;min-width:0;font-size:13.5px}
+.regsel .meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:3px}
+.sustento{background:var(--azul-soft);border:1px solid #D7DEF6;border-radius:10px;padding:11px 13px;margin-top:10px;font-size:13px}
+.sustento .eyebrow{color:var(--azul);margin-bottom:5px}
+.kv{display:flex;justify-content:space-between;gap:10px;padding:4px 0;border-bottom:1px dashed #D7DEF6;font-size:13px}
+.kv:last-child{border-bottom:0}
+.kv b{font-family:var(--mono)}
+
+/* diálogos usables en celular */
+dialog{max-height:92vh}
+.dlg-in{max-height:calc(92vh - 4px);overflow-y:auto;-webkit-overflow-scrolling:touch}
+@media (max-width:480px){
+  .rnum{font-size:19px}
+  .seg button{padding:9px 6px;font-size:12.5px}
+  .actions .btn{flex:1 1 auto}
+}
+
+
+/* tarjeta de reporte compacta */
+.card.rep{padding:11px 13px;margin-bottom:9px}
+.card.rep.noleido{background:#FCFDFF;border-color:#D7DEF6}
+.rep-top{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.rep-txt{font-size:13.5px;line-height:1.45;margin-top:6px;white-space:pre-wrap;color:var(--ink-2)}
+.rep-pie{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:9px}
+.btn-ver{display:inline-flex;align-items:center;gap:5px;font-family:inherit;font-size:12px;font-weight:500;
+  color:var(--verde);background:var(--verde-soft);border:1px solid #CFE7DE;border-radius:99px;
+  padding:5px 11px 5px 8px;cursor:pointer;line-height:1.3}
+.btn-ver:hover{background:#DCEFE7;border-color:#B4D9CB}
+.btn-ver .mas{display:grid;place-items:center;width:15px;height:15px;border-radius:50%;
+  background:var(--verde);color:#fff;font-size:11px;font-weight:600;line-height:1}
+.btn-preg{display:inline-flex;align-items:center;gap:5px;font-family:inherit;font-size:12px;font-weight:500;
+  color:var(--azul);background:var(--azul-soft);border:1px solid #CBD5F0;border-radius:99px;
+  padding:5px 11px 5px 9px;cursor:pointer;line-height:1.3}
+.btn-preg:hover{background:#E2E8F8;border-color:#B4C2E8}
+.btn-preg svg{width:14px;height:14px}
+.btn-leida{font-family:inherit;font-size:12px;color:var(--muted);background:none;border:0;cursor:pointer;padding:5px 2px}
+.btn-leida:hover{color:var(--ink)}
+
+
+/* cartillas deslizables de incidentes */
+.carrusel{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 10px;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none}
+.carrusel::-webkit-scrollbar{display:none}
+.inc-mini{flex:0 0 min(76vw,270px);scroll-snap-align:start;display:flex;flex-direction:column;gap:8px;
+  background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:13px;
+  font-family:inherit;color:inherit;text-align:left;cursor:pointer}
+.inc-mini:active{transform:scale(.985)}
+.inc-mini.critico{border-color:#EBB6AD;box-shadow:0 8px 20px -14px rgba(192,57,43,.5)}
+.inc-mini.res{opacity:.6}
+.im-top{display:flex;gap:6px;flex-wrap:wrap}
+.im-txt .viv{display:block;font-style:normal;font-size:10px;color:var(--verde);font-family:var(--mono);margin-bottom:3px}
+.im-txt{font-size:13.5px;line-height:1.4;color:var(--ink);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;min-height:2.6em}
+.im-pie{display:flex;justify-content:space-between;gap:8px;font-size:10.5px;color:var(--muted);margin-top:auto}
+
+.grid-dd{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:420px){.grid-dd{grid-template-columns:1fr}}
+/* actividades: un solo recuadro con filas */
+.lista-acts{padding:3px 14px}
+.act-row{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line-2);
+  padding:11px 0;font-family:inherit;color:inherit;cursor:pointer}
+.act-row:last-child{border-bottom:0}
+.act-row:active{opacity:.7}
+.ar-top{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.ar-txt{display:block;font-size:13.5px;line-height:1.4;color:var(--ink)}
+
+/* fila compacta de estado al pie de la ficha */
+.est-fila{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:16px;padding-top:12px;border-top:1px solid var(--line-2)}
+.estb{border-radius:99px}
+.estb.on-az{background:var(--azul);border-color:var(--azul);color:#fff}
+.estb.on-vd{background:var(--verde);border-color:var(--verde);color:#fff}
+
+/* diálogos centrados en todas las pantallas; en celular se ajustan al ancho */
+@media (max-width:640px){
+  dialog{width:calc(100vw - 28px);max-width:calc(100vw - 28px);border-radius:14px;max-height:86vh}
+  .dlg-in{padding:16px}
+  dialog::backdrop{background:rgba(17,21,36,.55)}
+}
+
+
+/* menú inferior del emprendedor */
+.bnav{position:fixed;left:0;right:0;bottom:0;z-index:60;display:flex;gap:4px;
+  background:var(--surface);border-top:1px solid var(--line);
+  padding:7px 10px calc(7px + env(safe-area-inset-bottom,0px));
+  box-shadow:0 -8px 24px -16px rgba(17,21,36,.25)}
+.bnav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  background:none;border:0;padding:7px 4px 6px;border-radius:12px;
+  color:var(--ink-2);font-family:inherit;cursor:pointer;position:relative}
+.bnav button[aria-current="true"]{color:var(--azul);background:var(--azul-soft)}
+.bnav svg{width:23px;height:23px}
+.bnav .bl{font-size:11px;font-weight:600;letter-spacing:.01em;line-height:1}
+.bnav .bdg{position:absolute;top:3px;left:calc(50% + 6px);background:var(--rojo);color:#fff;
+  font-size:9.5px;font-family:var(--mono);border-radius:99px;padding:1.5px 5px;line-height:1.3;font-weight:500}
+
+
+/* chat con claude: pantalla de chat real */
+.chat-shell{display:flex;flex-direction:column;padding:0;overflow:hidden;
+  height:calc(100dvh - 250px);min-height:420px;max-height:720px}
+.chat-top{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--line-2);background:var(--surface)}
+.av-c{width:30px;height:30px;flex:0 0 auto;border-radius:50%;background:var(--ink);color:#fff;
+  display:grid;place-items:center;font-size:15px;line-height:1}
+.av-c.grande{width:52px;height:52px;font-size:26px}
+.chat-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px;display:flex;flex-direction:column;gap:12px;background:var(--surface-2)}
+.msg{display:flex;max-width:94%}
+.msg.yo{align-self:flex-end;flex-direction:column;align-items:flex-end}
+.msg.ia{align-self:flex-start;gap:8px;align-items:flex-start}
+.msg.ia .av-c{margin-top:2px}
+.mcol{display:flex;flex-direction:column;min-width:0}
+.burb{padding:9px 13px;border-radius:16px;font-size:13.5px;line-height:1.5;white-space:pre-wrap;word-break:break-word}
+.msg.yo .burb{background:var(--ink);color:#fff;border-bottom-right-radius:5px}
+.msg.ia .burb{background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:5px}
+.mst{font-size:10px;color:var(--muted);margin-top:3px}
+.mfila{display:flex;align-items:center;gap:10px;margin-top:3px}
+.btn-copiar{display:inline-flex;align-items:center;gap:4px;font-family:inherit;font-size:11px;
+  color:var(--muted);background:none;border:0;cursor:pointer;padding:2px 4px;border-radius:6px}
+.btn-copiar:hover{color:var(--ink);background:var(--line-2)}
+.btn-copiar svg{width:13px;height:13px}
+.burb.escribiendo{display:flex;gap:4px;align-items:center;padding:13px 15px}
+.burb.escribiendo i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:pt 1.2s infinite}
+.burb.escribiendo i:nth-child(2){animation-delay:.2s}
+.burb.escribiendo i:nth-child(3){animation-delay:.4s}
+@keyframes pt{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-3px)}}
+.chat-vacio{margin:auto;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:10px}
+.chat-comp{display:flex;gap:8px;align-items:flex-end;padding:10px 12px;border-top:1px solid var(--line-2);background:var(--surface)}
+.chat-comp textarea{flex:1;border:1px solid var(--line);border-radius:20px;padding:10px 15px;resize:none;
+  font-family:inherit;font-size:14px;line-height:1.4;max-height:120px;background:var(--surface)}
+.chat-comp textarea:focus{outline:none;border-color:var(--azul)}
+.btn-send{width:42px;height:42px;flex:0 0 auto;border-radius:50%;background:var(--ink);color:#fff;
+  border:0;cursor:pointer;display:grid;place-items:center}
+.btn-send:hover{background:var(--azul)}
+.btn-send:disabled{opacity:.4;cursor:default}
+.btn-send svg{width:18px;height:18px;margin-left:-2px}
+
+
+/* selector de periodo: segmentado, distinto de los chips de área */
+.periodo-fila{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.periodo-ico{width:16px;height:16px;color:var(--muted);flex:0 0 auto}
+.segmentos{display:inline-flex;border:1.5px solid var(--line);border-radius:11px;overflow:hidden;background:var(--surface)}
+.segmentos button{font-family:inherit;font-size:13px;font-weight:500;color:var(--ink-2);
+  background:none;border:0;border-right:1px solid var(--line-2);padding:8px 14px;cursor:pointer;white-space:nowrap}
+.segmentos button:last-child{border-right:0}
+.segmentos button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.segmentos button:not([aria-pressed="true"]):hover{background:var(--surface-2)}
+@media (max-width:420px){.segmentos button{padding:8px 10px;font-size:12.5px}}
+
+/* tareas del día (asignadas por el emprendedor) */
+.dia-card{border-color:#EAD9B0;background:#FFFDF6}
+.tarea.dia.arr{background:#FFF6F4;border-radius:10px;margin:2px -6px;padding-left:6px;padding-right:6px}
+.gente{display:inline-flex;align-items:center;gap:2px;color:var(--muted)}
+.gente b{font-size:11px;font-family:var(--mono);margin-left:2px}
+.chip-cat{display:inline-block;font-family:var(--mono);font-size:10px;color:var(--ink-2);
+  background:var(--surface-2);border:1px solid var(--line);border-radius:99px;padding:1px 8px;margin:0 6px 3px 0;vertical-align:middle;text-decoration:none}
+.chip-arr{display:inline-block;font-family:var(--mono);font-size:10px;color:var(--rojo);
+  background:#FDE8E4;border:1px solid #F3C9C1;border-radius:99px;padding:1px 8px;margin:0 6px 3px 0;vertical-align:middle}
+.tarea.dia.arr .marca{border-color:#E2A69B}
+.tarea.sdel{opacity:.55}
+.tarea.sdel .txt>div:last-child, .tarea.sdel .txt>div{text-decoration:line-through}
+.tarea.sdel .txt .chip-del, .tarea.sdel .txt .chip-arr{text-decoration:none}
+.chip-del{display:inline-block;font-family:var(--mono);font-size:10px;color:var(--rojo);
+  background:#FDE8E4;border:1px solid #F3C9C1;border-radius:99px;padding:1px 8px;margin:0 6px 3px 0;text-decoration:none}
+.tarea.dia .marca{border-color:#D9BE85}
+.tarea.dia .marca.on{background:var(--ambar);border-color:var(--ambar)}
+/* hilo de seguimiento de un incidente */
+.segui{border-left:3px solid var(--line);padding-left:11px;margin:12px 0 2px}
+.seg-item{margin-bottom:8px}
+.seg-item:last-child{margin-bottom:0}
+
+/* header */
+.top{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.top-in{max-width:760px;margin:0 auto;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.logo{font-family:var(--display);font-weight:700;font-size:15.5px}
+.logo em{font-style:normal;color:var(--azul)}
+.top .spacer{flex:1}
+.uchip{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:99px;padding:4px 10px 4px 5px;background:var(--surface);cursor:pointer;font-size:12.5px;max-width:52vw}
+.uchip .who{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.av{width:22px;height:22px;border-radius:50%;background:var(--azul);color:#fff;font-size:10px;font-weight:600;display:grid;place-items:center;font-family:var(--mono);flex:0 0 auto}
+.tabs{display:flex;gap:6px;overflow-x:auto;max-width:760px;margin:0 auto;padding:8px 14px 10px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:7px 13px;font-size:13px;color:var(--ink-2);cursor:pointer}
+.tabs button[aria-current="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+/* vivo */
+.vivo{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;color:var(--verde)}
+.vivo i{width:8px;height:8px;border-radius:50%;background:var(--verde);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(18,121,90,.4)}50%{box-shadow:0 0 0 6px rgba(18,121,90,0)}}
+.nueva{animation:slide .5s ease}
+@keyframes slide{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+
+.inc .top-r{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.inc .stamp{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.fotos{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.fotos img{width:86px;height:86px;object-fit:cover;border-radius:9px;border:1px solid var(--line);cursor:pointer}
+.fotos .quitar{position:absolute;top:-6px;right:-6px;width:22px;height:22px;border-radius:50%;background:var(--rojo);color:#fff;border:0;font-size:12px;cursor:pointer;line-height:1}
+.foto-w{position:relative}
+audio{width:100%;margin-top:8px;height:38px}
+.transc{background:var(--azul-soft);border:1px solid #D7DEF6;border-radius:9px;padding:10px 12px;margin-top:8px;font-size:13px}
+.transc .eyebrow{color:var(--azul);margin-bottom:3px}
+.aviso-lig{background:var(--ambar-soft);border:1px solid #EEDFBD;border-radius:9px;padding:10px 12px;margin-top:8px;font-size:13px}
+.aviso-lig .eyebrow{color:var(--ambar);margin-bottom:3px}
+
+.rec-live{display:flex;align-items:center;gap:10px;background:var(--rojo-soft);border:1px solid #F3D3CE;border-radius:9px;padding:10px 12px;margin-top:8px}
+.rec-live i{width:10px;height:10px;border-radius:50%;background:var(--rojo);animation:pulse 1.4s infinite}
+.rec-live .t{font-family:var(--mono);font-size:14px;color:var(--rojo)}
+
+.tot{display:grid;grid-template-columns:repeat(auto-fit,minmax(105px,1fr));border:1px solid var(--line);border-radius:var(--r);overflow:hidden;background:var(--surface);margin-bottom:12px}
+.tot>div{padding:11px 13px;border-right:1px solid var(--line-2)}
+.tot>div:last-child{border-right:0}
+.tot .v{font-family:var(--display);font-weight:600;font-size:18px}
+.tot .l{font-size:11px;color:var(--muted)}
+.sec{display:flex;align-items:baseline;gap:10px;margin:20px 2px 9px}
+.sec-t{font-family:var(--display);font-weight:600;font-size:16.5px;letter-spacing:-.25px;color:var(--ink)}
+.sec .eyebrow{flex:1}
+.fchips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.fchips button{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:6px 12px;font-size:12.5px;color:var(--ink-2);cursor:pointer}
+.fchips button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.qa-q{background:var(--azul-soft);border:1px solid #D7DEF6;border-radius:12px 12px 12px 3px;padding:11px 13px;margin-bottom:8px}
+.qa-r{background:var(--surface);border:1px solid var(--line);border-radius:12px 12px 3px 12px;padding:11px 13px;margin:0 0 8px 18px;white-space:pre-wrap}
+.aviso{border-left:3px solid var(--azul);padding-left:11px}
+.aviso.noleido{background:var(--azul-soft);border-radius:0 9px 9px 0;padding:10px 12px 10px 11px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%) translateY(8px);background:var(--ink);color:#fff;font-size:13px;padding:11px 17px;border-radius:99px;opacity:0;pointer-events:none;transition:.2s;z-index:99;max-width:92vw;text-align:center}
+.toast.on{opacity:1;transform:translateX(-50%)}
+dialog{border:0;border-radius:14px;padding:0;max-width:640px;width:calc(100vw - 24px);box-shadow:0 24px 60px -20px rgba(17,21,36,.45)}
+dialog::backdrop{background:rgba(17,21,36,.5)}
+.dlg-in{padding:18px}
+dialog img.full{width:100%;border-radius:10px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<!-- ============ SELECCIÓN DE PERFIL ============ -->
+<div id="gate"><div class="gate-in gate">
+  <div class="gbrand">FUSE <em>OPS</em></div>
+  <h1 class="gh">Registro operativo del negocio</h1>
+  <p class="gp">Tres áreas, un solo historial compartido. Lo que se registra aquí lo ven el emprendedor y el analista al instante, con fecha y hora.</p>
+
+  <div id="g1"><div class="gcards">
+    <button class="gcard" data-g="emprendedor"><b>Emprendedor</b><span>Incidentes por criticidad, actividades del día, centro de alertas y consultas al analista.</span></button>
+    <button class="gcard" data-g="sensor"><b>Agente Sensor</b><span>Una sola función: el Registro de Actividad desde el celular, con texto, foto y voz.</span></button>
+    <button class="gcard" data-g="analista"><b>Analista</b><span>Analizo la base, respondo consultas y envío avisos proactivos al emprendedor.</span></button>
+  </div></div>
+
+  <div id="g2" class="hide">
+    <div class="eyebrow" style="color:#9AA6D4;margin-bottom:10px">Origen del reporte</div>
+    <div class="gcards">
+      <button class="gcard" data-sensor="tienda"><b>Sensor Tienda / Despacho</b><span>Sala, caja, empaque y entregas</span></button>
+      <button class="gcard" data-sensor="prod"><b>Sensor Producción · Serigrafía</b><span>Pulpo, horno, insumos, calidad</span></button>
+      <button class="gcard" data-sensor="web"><b>Sensor Ventas Web</b><span>Pedidos, pagos, envíos, reclamos</span></button>
+    </div>
+    <label class="f" style="margin-top:14px"><span>Tu nombre <i class="req">*</i></span><input id="g-nombre" autocomplete="name" placeholder="Quién reporta"></label>
+    <button class="gback" data-back="1">← Volver</button>
+  </div>
+
+  <div id="g3" class="hide">
+    <label class="f"><span>Tu nombre <i class="req">*</i></span><input id="g-nombre-an" autocomplete="name" placeholder="Quién firma análisis y avisos"></label>
+    <button class="btn primary" id="g-entrar-an" style="width:100%">Entrar como analista</button>
+    <button class="gback" data-back="1">← Volver</button>
+  </div>
+
+  <div id="g1-extra" style="margin-top:22px;border-top:1px solid #E6E9EF;padding-top:14px">
+    <button class="gback" id="copiar-enlace" style="margin:0">Copiar enlace directo para el emprendedor</button>
+    <div class="xs muted" style="margin-top:4px">Con ese enlace entra a su vista sin elegir perfil ni ver los demás.</div>
+  </div>
+</div></div>
+
+<!-- ============ APP ============ -->
+<div id="app" class="hide">
+  <div class="top">
+    <div class="top-in">
+      <div class="logo">FUSE <em>OPS</em></div>
+      <div class="spacer"></div>
+      <button class="uchip" id="switch"><span class="av" id="uav"></span><span class="who" id="uwho"></span><span class="muted">· cambiar</span></button>
+    </div>
+    <div class="tabs" id="tabs"></div>
+  </div>
+  <div class="wrap" id="view"></div>
+  <nav class="bnav hide" id="bnav" aria-label="Secciones"></nav>
+</div>
+
+<dialog id="dlg"><div class="dlg-in" id="dlg-in"></div></dialog>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================================
+   FUSE OPS · Registro de Actividad → base central → emprendedor y analista
+   Capa de datos v3:
+   - TODO lo liviano vive en UNA sola clave (fuse-ops-db-v3): registros sin
+     adjuntos, consultas y avisos. 1 lectura por refresco, 1 escritura por
+     acción → sin lluvia de peticiones que dispare límites de tasa.
+   - Los adjuntos (fotos/audio) van en su propia clave por registro
+     (fuse-ops-media-<id>) y se cargan bajo demanda, con caché.
+   - Toda escritura reintenta hasta 3 veces con espera creciente.
+   ===================================================================== */
+const $=s=>document.querySelector(s);
+const pad=n=>String(n).padStart(2,'0');
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dormir=ms=>new Promise(r=>setTimeout(r,ms));
+const AREAS={tienda:'Tienda / Despacho',prod:'Producción · Serigrafía',web:'Ventas Web'};
+const SENSOR={tienda:'Sensor Tienda / Despacho',prod:'Sensor Producción',web:'Sensor Ventas Web'};
+const AV={tienda:'T',prod:'P',web:'W'};
+const K_DB='fuse-ops-db-v3', K_MEDIA='fuse-ops-media-';
+const PRIO={alta:0,media:1,baja:2};
+const TIPOS_AVISO=[
+  'Recomendación de mejora',      // qué cambiar y por qué, con base en los datos
+  'Riesgo detectado',             // algo que puede afectar la operación si no se atiende
+  'Tendencia identificada',       // hacia dónde se está moviendo la operación
+  'Patrón que se repite',         // un comportamiento recurrente en los registros
+  'Aviso preventivo',             // anticiparse antes de que se convierta en problema
+  'Balance de la operación'       // panorama general del periodo
+];
+const ESTADOS_INC=['abierto','revisado','resuelto'];
+
+const iso=ts=>{const d=new Date(ts);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
+const hoyIso=()=>iso(Date.now());
+const hhmm=ts=>{const d=new Date(ts);return pad(d.getHours())+':'+pad(d.getMinutes())};
+function fmt(ts){
+  const d=new Date(ts),h=pad(d.getHours())+':'+pad(d.getMinutes());
+  if(iso(ts)===hoyIso())return 'Hoy '+h;
+  const ayer=new Date();ayer.setDate(ayer.getDate()-1);
+  if(iso(ts)===iso(ayer))return 'Ayer '+h;
+  return pad(d.getDate())+'/'+pad(d.getMonth()+1)+' '+h;
+}
+
+/* ---------- estado ---------- */
+const VACIA_DB=()=>({registros:[],consultas:[],avisos:[],tareas:[],personas:[],checks:[]});
+let DB=VACIA_DB();
+const MEDIA=new Map();           // id → {fotos,audio} | 'cargando' | 'error'
+const SES={perfil:null,area:null,nombre:null,tab:null,filtro:'',filtroTipo:'',verConsulta:null,
+  ultRefresco:0,nuevas:new Set(),avisoRef:null,ultimoEnvio:0,guardando:false};
+const DRAFT={tipo:'actividad',prioridad:'media',texto:'',fotos:[],audio:null,transcript:'',grabando:false};
+let toastT=null;
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),2800);}
+
+/* ---------- almacenamiento: UNA sola base en el servidor ----------
+   Todos los perfiles y dispositivos leen y escriben la misma base a través de
+   /api/db y /api/media. No hay copias locales: si el servidor no responde, la
+   app lo dice y no deja registrar, en vez de crear una base paralela.
+   (Fuera de un servidor —por ejemplo en una vista previa— usa el almacén del
+   visor, que en ese contexto también es único.)                              */
+let BASE='iniciando';           // 'servidor' | 'visor' | 'sinConexion'
+const MEMORIA=new Map();
+const DIAG={motivo:'',detalle:'',http:null,enServidor:false};
+
+async function probarServidor(){
+  try{
+    if(typeof location==='undefined'||!/^https?:$/.test(location.protocol))return false;
+    DIAG.enServidor=true;
+    let r=null;
+    for(let intento=0;intento<3&&!r;intento++){
+      try{
+        const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),20000);
+        r=await fetch('api/db',{signal:ctl.signal,cache:'no-store'});clearTimeout(t);
+      }catch(err){
+        if(intento===2)throw new Error('El servidor tardó demasiado en responder (arranque en frío o sin conexión).');
+        await dormir(1200);
+      }
+    }
+    DIAG.http=r.status;
+    const txt=await r.text();
+    if(r.status===404){
+      DIAG.motivo='Las funciones del servidor no existen (404)';
+      DIAG.detalle='Falta la carpeta api/ en el repositorio: sube api/db.js y api/media.js.';
+      return false;
+    }
+    if(!r.ok){
+      let msg=txt.slice(0,240);
+      try{const j=JSON.parse(txt);if(j.error)msg=j.error;}catch(e){}
+      DIAG.motivo=/storage|base de datos|upstash|redis/i.test(msg)
+        ? 'Falta conectar la base de datos en Vercel'
+        : 'El servidor respondió con error '+r.status;
+      DIAG.detalle=msg;
+      return false;
+    }
+    const j=JSON.parse(txt);
+    if(!(j&&typeof j==='object'&&Array.isArray(j.registros))){
+      DIAG.motivo='La respuesta del servidor no tiene el formato esperado';
+      DIAG.detalle=txt.slice(0,240);
+      return false;
+    }
+    DIAG.motivo='';DIAG.detalle='';
+    return true;
+  }catch(e){
+    const m=String(e&&e.message||e);
+    DIAG.motivo=/abort|tardó|timeout/i.test(m)?'El servidor no respondió a tiempo':'No se pudo contactar al servidor';
+    DIAG.detalle=/abort|tardó|timeout/i.test(m)
+      ?'Puede ser el arranque en frío de la función. Pulsa Reintentar; si insiste, revisa /api/estado.'
+      :m;
+    return false;
+  }
+}
+async function elegirBase(){
+  if(await probarServidor()){BASE='servidor';return;}
+  if(!DIAG.enServidor){
+    try{
+      if(window.storage&&typeof window.storage.set==='function'){
+        const k='fuse-ops-probe';
+        if(await window.storage.set(k,'1',false)){
+          try{await window.storage.delete(k,false)}catch(e){}
+          BASE='visor';return;
+        }
+      }
+    }catch(e){}
+    BASE='visor';return;   // vista previa sin persistencia; sigue siendo una sola base
+  }
+  BASE='sinConexion';
+}
+const almacenListo=elegirBase();
+async function reconectar(){
+  toast('Conectando con la base…');
+  await elegirBase();
+  if(BASE==='sinConexion'){toast(DIAG.motivo||'El servidor no responde');render();return;}
+  await cargarDB();toast('Conectado.');render();
+}
+function pantallaSinBase(){
+  const pasos=DIAG.http===404
+    ?['Sube al repositorio la carpeta api/ con db.js y media.js (Add file → Create new file, y escribe api/db.js para que se cree la carpeta).',
+      'Espera a que Vercel redespliegue solo.']
+    :['En Vercel, pestaña Storage → Marketplace Database Providers → Redis → Create → Upstash for Redis (plan Free).',
+      'Abre la base creada → Connect Project → elige este proyecto → Connect.',
+      'Pestaña Deployments → menú ⋯ del último despliegue → Redeploy. Sin este paso las credenciales no entran.'];
+  return `<div class="card" style="border-color:#F3D3CE;background:#FFFCFB">
+    <h1>La base de datos no responde</h1>
+    <div class="sm" style="margin-top:4px">Para que todos los perfiles vean lo mismo, esta app guarda solo en el servidor.
+      Mientras no conteste, no se registra nada: así ningún dato queda atrapado en un dispositivo suelto.</div>
+    <div class="xs muted" style="margin-top:8px">${esc(DIAG.motivo||'Sin respuesta')} · api/db: ${DIAG.http==null?'sin respuesta':'HTTP '+DIAG.http}</div>
+    ${DIAG.detalle?`<div class="transc" style="margin-top:8px">${esc(DIAG.detalle)}</div>`:''}
+    <div class="eyebrow" style="margin:16px 0 6px">Cómo arreglarlo</div>
+    <ol class="sm" style="margin:0;padding-left:18px">${pasos.map(p=>`<li style="margin-bottom:6px">${esc(p)}</li>`).join('')}</ol>
+    <div class="xs muted" style="margin-top:10px">Para ver exactamente qué credenciales encuentra el servidor, abre
+      <a href="api/estado" target="_blank" rel="noopener" class="mono">/api/estado</a>.</div>
+    <div class="actions"><button class="btn primary" id="reconectar">Reintentar</button></div>
+  </div>`;
+}
+async function rawGet(k){
+  if(BASE==='servidor'){
+    const url=k===K_DB?'api/db':'api/media?id='+encodeURIComponent(k.slice(K_MEDIA.length));
+    const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),20000);
+    const r=await fetch(url,{cache:'no-store',signal:ctl.signal});clearTimeout(t);
+    if(r.status===404)return null;
+    if(!r.ok)throw new Error('servidor '+r.status);
+    return await r.text();
+  }
+  if(BASE==='sinConexion')throw new Error('sin base');
+  try{
+    if(window.storage&&typeof window.storage.get==='function'){
+      const r=await window.storage.get(k,false);return r&&r.value!=null?r.value:null;
+    }
+  }catch(e){
+    if(!/not found|404/i.test(String(e&&e.message||e)))throw e;
+    return null;
+  }
+  return MEMORIA.has(k)?MEMORIA.get(k):null;
+}
+async function rawSet(k,json){
+  if(BASE==='servidor'){
+    const url=k===K_DB?'api/db':'api/media?id='+encodeURIComponent(k.slice(K_MEDIA.length));
+    const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),25000);
+    const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:json,signal:ctl.signal});clearTimeout(t);
+    if(!r.ok)throw new Error('servidor '+r.status);
+    /* el servidor fusiona y devuelve la base resultante: adoptarla evita pisar
+       lo que otro perfil guardó un segundo antes */
+    if(k===K_DB){try{const j=await r.json();if(j&&Array.isArray(j.registros))DB=j;}catch(e){}}
+    return true;
+  }
+  if(BASE==='sinConexion')throw new Error('sin base');
+  try{
+    if(window.storage&&typeof window.storage.set==='function')return !!(await window.storage.set(k,json,false));
+  }catch(e){}
+  MEMORIA.set(k,json);return true;
+}
+async function sGet(k){
+  await almacenListo;
+  for(let i=0;i<3;i++){
+    try{const v=await rawGet(k);return v?JSON.parse(v):null}
+    catch(e){
+      const msg=String(e&&e.message||e).toLowerCase();
+      if(msg.includes('not found')||msg.includes('404'))return null;
+      if(msg.includes('sin base'))return null;
+      await dormir(350*(i+1));
+    }
+  }
+  return null;
+}
+async function sSet(k,v){
+  await almacenListo;
+  /* mientras haya una escritura en vuelo, el sondeo no puede pisar la memoria;
+     la marca de tiempo invalida además cualquier sondeo que ya estaba viajando */
+  SES.escrituras=(SES.escrituras||0)+1;
+  SES.ultimaEscritura=Date.now();
+  try{
+  const json=JSON.stringify(v);
+  for(let i=0;i<3;i++){
+    try{if(await rawSet(k,json))return true}
+    catch(e){
+      /* si el servidor se cayó a mitad de sesión, no inventamos una base local */
+      if(String(e&&e.message||e).includes('sin base'))break;
+    }
+    await dormir(400*(i+1));
+  }
+  if(BASE==='servidor'){BASE='sinConexion';DIAG.motivo='Se perdió la conexión con el servidor';DIAG.detalle='El registro no se guardó. Reintenta cuando vuelva.';}
+  return false;
+  }finally{SES.escrituras=Math.max(0,(SES.escrituras||1)-1);}
+}
+async function cargarDB(){const v=await sGet(K_DB);if(v)DB={...VACIA_DB(),...v};}
+async function guardarDB(){return sSet(K_DB,DB);}
+
+/* ---------- registros ---------- */
+async function guardarRegistro(reg,media){
+  /* 1) el texto SIEMPRE entra: el registro liviano va a la clave única */
+  reg.nFotos=media&&media.fotos?media.fotos.length:0;
+  reg.hasAudio=!!(media&&media.audio);
+  DB.registros.push(reg);
+  /* alerta automática si es incidente de prioridad alta (misma escritura) */
+  if(reg.tipo==='incidente'&&reg.prioridad==='alta'){
+    DB.avisos.push({id:uid(),ts:reg.ts,origen:'sistema',tipoAviso:'Alerta preventiva',
+      texto:'Incidente de prioridad ALTA en '+AREAS[reg.area]+': '+(reg.texto||reg.transcript||'ver detalle en Incidentes').slice(0,140),
+      firma:'Regla automática',refIncidente:reg.id,leido:false});
+  }
+  const okDB=await guardarDB();
+  if(!okDB){DB.registros=DB.registros.filter(r=>r.id!==reg.id);
+    DB.avisos=DB.avisos.filter(a=>a.refIncidente!==reg.id);return {ok:false};}
+  /* 2) los adjuntos van aparte; si fallan, el registro ya está a salvo */
+  if(reg.nFotos||reg.hasAudio){
+    const okM=await sSet(K_MEDIA+reg.id,{fotos:media.fotos||[],audio:media.audio||null});
+    if(okM){MEDIA.set(reg.id,{fotos:media.fotos||[],audio:media.audio||null});return {ok:true,media:true};}
+    reg.mediaPerdida=true;await guardarDB();
+    return {ok:true,media:false};
+  }
+  return {ok:true,media:true};
+}
+/* carga diferida de adjuntos, de a pocos, solo cuando se muestran */
+let cargandoMedia=false;
+async function cargarMediaPendiente(){
+  if(cargandoMedia)return;
+  const pend=DB.registros.filter(r=>(r.nFotos||r.hasAudio)&&!r.mediaPerdida&&!MEDIA.has(r.id)).slice(0,3);
+  if(!pend.length)return;
+  cargandoMedia=true;
+  for(const r of pend){
+    MEDIA.set(r.id,'cargando');
+    const m=await sGet(K_MEDIA+r.id);
+    MEDIA.set(r.id,m||'error');
+  }
+  cargandoMedia=false;
+  render();
+}
+
+/* refresco en vivo: UNA sola lectura */
+const dlgAbierto=()=>{const d=document.querySelector('#dlg');return !!(d&&d.open)};
+const escribiendo=()=>{const ae=document.activeElement;return !!(ae&&/^(TEXTAREA|INPUT|SELECT)$/.test(ae.tagName))};
+async function refrescoVivo(){
+  if(!SES.perfil||SES.guardando||SES.escrituras)return;
+  /* con un diálogo abierto o un campo en uso, la base no se reemplaza:
+     el diálogo guarda sobre el objeto que tiene en la mano y un reemplazo
+     lo dejaría escribiendo en una copia huérfana */
+  if(dlgAbierto()||escribiendo()||SES.empEdit||SES.editandoTareas||SES.editandoPersonas)return;
+  if(BASE==='sinConexion')return;
+  if(SES.perfil==='sensor'&&DRAFT.grabando)return;  // no interrumpir una grabación
+  const previos=new Set(DB.registros.map(r=>r.id));
+  const pedidoEn=Date.now();
+  const v=await sGet(K_DB);
+  /* revalidar TODO al aterrizar: guardados nuevos o un diálogo que se abrió
+     mientras este sondeo viajaba invalidan la copia recibida */
+  if(SES.guardando||SES.escrituras||(SES.ultimaEscritura&&SES.ultimaEscritura>=pedidoEn))return;
+  if(dlgAbierto()||escribiendo()||SES.empEdit||SES.editandoTareas||SES.editandoPersonas)return;
+  if(v){
+    const nuevo={...VACIA_DB(),...v};
+    let hayNuevos=false;
+    nuevo.registros.forEach(r=>{if(!previos.has(r.id)){SES.nuevas.add(r.id);hayNuevos=true;}});
+    const cambio=JSON.stringify(nuevo)!==JSON.stringify(DB);
+    DB=nuevo;
+    SES.ultRefresco=Date.now();
+    if(!cambio)return;                    // nada nuevo → no tocar la pantalla
+    if(SES.perfil==='sensor'){if(hayNuevos)toast('Nuevo registro en la base');return;}
+    /* regla global: si la persona está escribiendo en CUALQUIER campo,
+       no se redibuja; el refresco queda pendiente hasta que suelte el campo */
+    const ae=document.activeElement;
+    if(ae&&/^(TEXTAREA|INPUT|SELECT)$/.test(ae.tagName)){
+      SES.renderPendiente=true;
+      if(hayNuevos)toast('Nuevo registro en la base · se mostrará al terminar de escribir');
+      return;
+    }
+    render();
+    if(hayNuevos)toast('Nuevo registro en la base');
+  }else{SES.ultRefresco=Date.now();}
+}
+/* en base compartida conviene sondear más seguido: la latencia es de red, no de disco */
+setInterval(refrescoVivo,3000);
+try{
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)refrescoVivo()});
+  window.addEventListener('focus',refrescoVivo);
+  document.addEventListener('focusout',()=>{setTimeout(()=>{
+    if(!SES.renderPendiente)return;
+    const ae=document.activeElement;
+    if(ae&&/^(TEXTAREA|INPUT|SELECT)$/.test(ae.tagName))return; // saltó a otro campo
+    SES.renderPendiente=false;render();
+  },150)});
+}catch(e){}
+setInterval(()=>{const el=$('#vivo-t');if(el)el.textContent='hace '+Math.max(0,Math.round((Date.now()-SES.ultRefresco)/1000))+' s';},1000);
+
+/* =====================================================================
+   CAPTURA DE FOTO Y AUDIO
+   ===================================================================== */
+function comprimirFoto(file){
+  /* FileReader→dataURL en vez de blob: — las URLs blob están bloqueadas en
+     algunos entornos (visores embebidos con CSP estricta) y hacían fallar
+     la carga. El dataURL funciona en todos. */
+  return new Promise(res=>{
+    const fr=new FileReader();
+    fr.onerror=()=>res(null);
+    fr.onload=()=>{
+      const original=fr.result;
+      const img=new Image();
+      img.onload=()=>{
+        try{
+          const MAX=720,e_=Math.min(1,MAX/Math.max(img.width||1,img.height||1));
+          const c=document.createElement('canvas');
+          c.width=Math.max(1,Math.round((img.width||1)*e_));
+          c.height=Math.max(1,Math.round((img.height||1)*e_));
+          c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+          const salida=c.toDataURL('image/jpeg',.62);
+          res(salida&&salida.length>50?salida:original);
+        }catch(e){
+          /* si el lienzo falla, se guarda la foto original mientras no sea enorme */
+          res(original.length<1200000?original:null);
+        }
+      };
+      img.onerror=()=>{
+        /* el navegador no puede decodificarla (p. ej. HEIC fuera de Safari):
+           si es liviana se guarda igual; si no, se avisa */
+        res(original.length<1200000?original:null);
+      };
+      img.src=original;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+let mediaRec=null,recChunks=[],recStream=null,recStart=0,recTick=null,recog=null,recogFinal='';
+async function iniciarGrabacion(){
+  try{recStream=await navigator.mediaDevices.getUserMedia({audio:true});}
+  catch(e){return toast('No se pudo acceder al micrófono. Revisa los permisos del navegador.');}
+  recChunks=[];recogFinal=DRAFT.transcript?DRAFT.transcript+' ':'';
+  mediaRec=new MediaRecorder(recStream);
+  mediaRec.ondataavailable=ev=>{if(ev.data.size)recChunks.push(ev.data)};
+  mediaRec.onstop=()=>{
+    const blob=new Blob(recChunks,{type:mediaRec.mimeType||'audio/webm'});
+    const fr=new FileReader();
+    fr.onload=()=>{DRAFT.audio={data:fr.result,dur:Math.round((Date.now()-recStart)/1000)};DRAFT.grabando=false;render();};
+    fr.readAsDataURL(blob);
+    recStream.getTracks().forEach(t=>t.stop());
+  };
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(SR){
+    recog=new SR();recog.lang='es-PE';recog.continuous=true;recog.interimResults=true;
+    recog.onresult=ev=>{
+      let interim='';
+      for(let i=ev.resultIndex;i<ev.results.length;i++){
+        if(ev.results[i].isFinal)recogFinal+=ev.results[i][0].transcript+' ';
+        else interim+=ev.results[i][0].transcript;
+      }
+      DRAFT.transcript=(recogFinal+interim).trim();
+      const el=$('#tr-live');if(el)el.textContent=DRAFT.transcript||'…';
+    };
+    try{recog.start()}catch(e){}
+  }
+  DRAFT.grabando=true;recStart=Date.now();
+  mediaRec.start();
+  recTick=setInterval(()=>{
+    const el=$('#rec-t');const s=Math.round((Date.now()-recStart)/1000);
+    if(el)el.textContent=pad(Math.floor(s/60))+':'+pad(s%60);
+    if(s>=120)detenerGrabacion();
+  },300);
+  render();
+}
+function detenerGrabacion(){
+  clearInterval(recTick);
+  if(recog){try{recog.stop()}catch(e){}recog=null;}
+  if(mediaRec&&mediaRec.state!=='inactive')mediaRec.stop();
+}
+
+/* =====================================================================
+   VISTA · AGENTE SENSOR — Registro de Actividad (única función)
+   ===================================================================== */
+function vSensor(){
+  const tieneSR=!!(window.SpeechRecognition||window.webkitSpeechRecognition);
+  const esInc=DRAFT.tipo==='incidente';
+  return `
+  <div class="card">
+    <div class="top-r" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span class="chip azul">${SENSOR[SES.area]}</span>
+      <span class="xs mono muted" style="margin-left:auto">Se sella con fecha, hora, área y tu nombre</span>
+    </div>
+    <h1 style="margin-top:8px">Registro de Actividad</h1>
+
+    <div class="eyebrow" style="margin:10px 0 6px">Tipo de registro <i class="req">*</i></div>
+    <div class="seg">
+      <button data-tipo="actividad" aria-pressed="${!esInc}">Actividad</button>
+      <button data-tipo="incidente" aria-pressed="${esInc}">Incidente</button>
+    </div>
+    <div class="xs muted" style="margin-top:6px">${esInc
+      ?'Incidente: algo alteró la operación normal — afecta productividad, continuidad, calidad o procesos.'
+      :'Actividad: registro normal de las tareas de la operación diaria.'}</div>
+
+    ${esInc?`<div class="eyebrow" style="margin:12px 0 6px">Prioridad del incidente <i class="req">*</i></div>
+    <div class="seg prio">
+      ${['alta','media','baja'].map(p=>`<button class="p-${p}" data-prio="${p}" aria-pressed="${DRAFT.prioridad===p}">${p[0].toUpperCase()+p.slice(1)}</button>`).join('')}
+    </div>
+    ${DRAFT.prioridad==='alta'?'<div class="xs" style="color:var(--rojo);margin-top:6px">Prioridad alta: al enviar se genera una alerta automática para el emprendedor.</div>':''}`:''}
+
+    <label class="f" style="margin-top:12px"><span>${esInc?'¿Qué pasó?':'¿Qué se hizo?'} <i class="req">*</i></span>
+      <textarea id="s-texto" rows="4" placeholder="${esInc?'Describe la situación y cómo afecta la operación':'Describe la tarea o el avance realizado'}">${esc(DRAFT.texto)}</textarea></label>
+
+    <div class="eyebrow" style="margin-bottom:6px">Fotografías</div>
+    <div class="fotos">
+      ${DRAFT.fotos.map((f,ix)=>`<span class="foto-w"><img src="${f}" alt="Foto ${ix+1}" data-ampliar="${ix}"><button class="quitar" data-qfoto="${ix}" aria-label="Quitar foto">✕</button></span>`).join('')}
+      ${DRAFT.fotos.length<3?`<label class="btn" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer">📷 ${DRAFT.fotos.length?'Agregar otra':'Tomar o elegir foto'}
+        <input type="file" accept="image/*" capture="environment" id="s-foto" class="hide"></label>`:'<span class="xs muted">Máximo 3 fotos por registro.</span>'}
+    </div>
+
+    <div class="eyebrow" style="margin:14px 0 6px">Audio</div>
+    ${DRAFT.grabando
+      ?`<div class="rec-live"><i></i><span class="t" id="rec-t">00:00</span>
+         <span class="sm" style="flex:1">Grabando… habla con normalidad.</span>
+         <button class="btn" id="s-stop">Detener</button></div>
+        ${tieneSR?`<div class="transc"><div class="eyebrow">Transcripción en vivo</div><div id="tr-live">${esc(DRAFT.transcript)||'…'}</div></div>`:''}`
+      :DRAFT.audio
+      ?`<audio controls src="${DRAFT.audio.data}"></audio>
+        <div class="actions" style="margin-top:6px"><span class="xs muted">${DRAFT.audio.dur}s grabados</span>
+        <button class="btn quiet" id="s-regrabar">Grabar de nuevo</button></div>`
+      :`<button class="btn rec" id="s-grabar">● Grabar audio</button>
+        <div class="xs muted" style="margin-top:6px">${tieneSR?'Se transcribe solo mientras hablas; luego puedes corregir el texto.':'Tu navegador no transcribe en vivo: puedes escribir la transcripción abajo.'}</div>`}
+    ${(DRAFT.audio||DRAFT.transcript)&&!DRAFT.grabando?`
+      <label class="f" style="margin-top:10px"><span>Transcripción del audio (corrígela si hace falta)</span>
+      <textarea id="s-transc" rows="3">${esc(DRAFT.transcript)}</textarea></label>`:''}
+
+    <div class="actions" style="margin-top:16px">
+      <button class="btn primary" id="s-enviar" style="flex:1;min-width:180px;padding:13px">Enviar a la base de registros</button>
+    </div>
+    <div class="xs muted" style="margin-top:8px">Este perfil solo registra. La revisión y el análisis ocurren en los otros perfiles.</div>
+  </div>
+  ${SES.ultimoEnvio?`<div class="card" style="border-color:#CFE7DE;background:#FCFFFE">
+    <span class="chip verde">Enviado</span> <span class="sm">Tu registro quedó en la base · ${fmt(SES.ultimoEnvio)}</span></div>`:''}
+  ${(()=>{const abiertos=DB.registros.filter(r=>r.tipo==='incidente'&&r.area===SES.area&&r.estado!=='resuelto').sort((a,b)=>b.ts-a.ts);
+    if(!abiertos.length)return '';
+    return `<div class="sec"><span class="eyebrow">Seguimiento · incidentes abiertos de tu área</span>
+      <span class="xs muted">${abiertos.length}</span></div>
+    <div class="sm muted" style="margin:-4px 2px 10px">Si un incidente sigue vivo, actualízalo aquí en vez de crear otro: todo el seguimiento queda en una sola cartilla.</div>
+    ${abiertos.map(r=>`<div class="card" style="padding:11px 13px">
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+        <span class="chip ${r.prioridad==='alta'?'rojo':(r.prioridad==='media'?'ambar':'')}">${r.prioridad}</span>
+        <span class="xs mono muted" style="margin-left:auto">${fmt(r.ts)} · ${esc(r.persona)}</span>
+      </div>
+      <div class="sm" style="margin:6px 0">${esc(textoVivo(r).slice(0,120))}</div>
+      ${(r.actualizaciones&&r.actualizaciones.length)?`<div class="xs" style="margin-bottom:6px;color:var(--verde)">↻ ${r.actualizaciones.length} actualización(es) · última ${hhmm(r.actualizaciones[r.actualizaciones.length-1].ts)}</div>`:''}
+      <button class="btn xs" data-actinc="${r.id}">↻ Actualizar este incidente</button>
+    </div>`).join('')}`})()}`;
+}
+async function enviarRegistro(){
+  const texto=($('#s-texto')?$('#s-texto').value.trim():DRAFT.texto.trim());
+  const transc=$('#s-transc')?$('#s-transc').value.trim():DRAFT.transcript.trim();
+  if(!texto&&!transc&&!DRAFT.audio&&!DRAFT.fotos.length)return toast('Describe el registro o adjunta foto o audio');
+  if(DRAFT.grabando)return toast('Detén la grabación antes de enviar');
+  if(SES.guardando)return;
+  const reg={id:uid(),ts:Date.now(),area:SES.area,persona:SES.nombre,
+    tipo:DRAFT.tipo,texto,transcript:transc};
+  if(reg.tipo==='incidente'){reg.prioridad=DRAFT.prioridad;reg.estado='abierto';}
+  const media={fotos:DRAFT.fotos.slice(),audio:DRAFT.audio};
+  const btn=$('#s-enviar');btn.disabled=true;btn.textContent='Enviando…';SES.guardando=true;
+  const res=await guardarRegistro(reg,media);
+  SES.guardando=false;
+  if(!res.ok){
+    btn.disabled=false;btn.textContent='Enviar a la base de registros';
+    render(); // si la base se cayó, la pantalla lo explica
+    return toast('El servidor no aceptó el registro. Tu texto sigue aquí; reintenta.');
+  }
+  const eraAlta=reg.tipo==='incidente'&&reg.prioridad==='alta';
+  DRAFT.texto='';DRAFT.fotos=[];DRAFT.audio=null;DRAFT.transcript='';DRAFT.tipo='actividad';DRAFT.prioridad='media';
+  SES.ultimoEnvio=reg.ts;
+  if(!res.media)toast('Registro guardado, pero los adjuntos no se pudieron subir.');
+  else toast(eraAlta?'Incidente registrado · alerta enviada al emprendedor':'Registro guardado · '+fmt(reg.ts));
+  render();
+}
+
+/* =====================================================================
+   TARJETAS
+   ===================================================================== */
+const lista=()=>DB.registros.slice();
+const incidentes=()=>DB.registros.filter(r=>r.tipo==='incidente');
+const actividades=()=>DB.registros.filter(r=>r.tipo!=='incidente');
+const avisosDe=id=>DB.avisos.filter(a=>a.origen==='analista'&&(a.refIncidente===id||(a.refs||[]).includes(id)));
+
+function chipPrio(p){return `<span class="chip ${p==='alta'?'rojo':(p==='media'?'ambar':'')}">Prioridad ${p}</span>`}
+function chipEstado(e){return `<span class="chip ${e==='resuelto'?'verde':(e==='revisado'?'azul':'rojo')}">${e}</span>`}
+
+function mediaHtml(r){
+  if(!(r.nFotos||r.hasAudio))return '';
+  if(r.mediaPerdida)return '<div class="xs muted" style="margin-top:6px">Los adjuntos de este registro no llegaron a subirse.</div>';
+  const m=MEDIA.get(r.id);
+  if(!m||m==='cargando')return '<div class="xs muted" style="margin-top:6px">Cargando adjuntos…</div>';
+  if(m==='error')return '<div class="xs muted" style="margin-top:6px">No se pudieron cargar los adjuntos.</div>';
+  return (m.audio?`<audio controls preload="none" src="${m.audio.data}"></audio>`:'')+
+    (m.fotos&&m.fotos.length?`<div class="fotos">${m.fotos.map((f,ix)=>`<img src="${f}" alt="Foto ${ix+1}" data-verfoto="${r.id}-${ix}">`).join('')}</div>`:'');
+}
+function cardReg(r,opts){
+  opts=opts||{};
+  const esInc=r.tipo==='incidente';
+  const critico=esInc&&r.prioridad==='alta'&&r.estado!=='resuelto';
+  const rel=esInc?avisosDe(r.id):[];
+  return `<div class="card inc ${critico?'critico':''} ${esInc&&r.estado==='resuelto'?'resuelto':''} ${SES.nuevas.has(r.id)?'nueva':''}">
+    <div class="top-r">
+      <span class="chip azul">${AREAS[r.area]}</span>
+      ${esInc?chipPrio(r.prioridad):'<span class="chip">Actividad</span>'}
+      ${esInc?chipEstado(r.estado):''}
+      ${r.nFotos?`<span class="chip">📷 ${r.nFotos}</span>`:''}
+      ${r.hasAudio?'<span class="chip">🎙</span>':''}
+      <span class="stamp" style="margin-left:auto">${fmt(r.ts)}${SES.perfil==='emprendedor'?'':' · '+esc(r.persona)}${(r.actualizaciones&&r.actualizaciones.length)?' · ↻'+r.actualizaciones.length:''}</span>
+    </div>
+    ${r.texto?`<div class="sm" style="margin-top:7px">${esc(r.texto)}</div>`:''}
+    ${r.transcript?`<div class="transc"><div class="eyebrow">Audio transcrito</div>${esc(r.transcript)}</div>`:''}
+    ${mediaHtml(r)}
+    ${rel.map(a=>`<div class="aviso-lig"><div class="eyebrow">${esc(a.tipoAviso)} del analista · ${fmt(a.ts)}</div>${esc(a.texto)}</div>`).join('')}
+    ${esInc&&opts.gestionar?`<div class="actions">
+      <label class="f" style="margin:0;flex:0 0 auto"><span>Estado del incidente</span>
+        <select data-estado="${r.id}" style="min-width:150px">${ESTADOS_INC.map(x=>`<option ${x===r.estado?'selected':''}>${x}</option>`).join('')}</select></label>
+      <span class="xs muted">Se mantiene destacado hasta quedar revisado o resuelto.</span>
+    </div>`:''}
+    ${esInc&&opts.analizar?`<div class="actions"><button class="btn" data-analizar="${r.id}">Analizar este incidente</button></div>`:''}
+  </div>`;
+}
+
+
+/* =====================================================================
+   TAREAS FIJAS (POE) Y PERSONAS POR ÁREA
+   - tareas: plantilla editable por área, con orden
+   - personas: quiénes trabajan en cada área
+   - checks: una marca por tarea y día, con quién la hizo
+   El borrado es lógico (eliminada:true) para que la fusión del servidor
+   no reviva lo que alguien borró desde otro dispositivo.
+   ===================================================================== */
+/* POE = tareas fijas recurrentes (sin fecha). Las "tareas del día" llevan
+   tipoTarea:'dia' + fecha + responsable, las crea el emprendedor y viven
+   junto al POE pero no lo alteran: el % de área sigue siendo solo POE. */
+const tareasDe=a=>DB.tareas.filter(t=>t.area===a&&!t.eliminada&&t.tipoTarea!=='dia').sort((x,y)=>(x.orden||0)-(y.orden||0));
+const tareasDia=(a,fecha)=>DB.tareas.filter(t=>t.area===a&&!t.eliminada&&t.tipoTarea==='dia'&&t.fecha===fecha).sort((x,y)=>(x.ts||0)-(y.ts||0));
+/* una tarea del día que no se completó NO desaparece: rueda a los días
+   siguientes como pendiente arrastrada (clave visual roja) hasta que
+   alguien la marque o el emprendedor la quite */
+const hechaAlguna=tid=>DB.checks.some(c=>c.tareaId===tid&&c.hecho);
+function genteIconos(a){
+  const g=personasDe(a);
+  if(!g.length)return '';
+  const ICO='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+  const n=Math.min(g.length,5);
+  return `<span class="gente" title="${esc(g.map(x=>x.nombre).join(', '))}" aria-label="${g.length} persona(s) en el área">${ICO.repeat(n)}${g.length>5?'<b>+'+(g.length-5)+'</b>':''}</span>`;
+}
+const categorias=()=>[...new Set(DB.tareas.filter(t=>!t.eliminada&&t.categoria).map(t=>t.categoria))].sort((a,b)=>a.localeCompare(b));
+function tareasDiaVisibles(a,hoy){
+  const deHoy=tareasDia(a,hoy).map(t=>({...t,arrastrada:false}));
+  const arrastradas=DB.tareas
+    .filter(t=>t.area===a&&!t.eliminada&&t.tipoTarea==='dia'&&t.fecha&&t.fecha<hoy
+      &&(hecha(t.id,hoy)||!hechaAlguna(t.id)))
+    .sort((x,y)=>(x.fecha<y.fecha?-1:x.fecha>y.fecha?1:(x.ts||0)-(y.ts||0)))
+    .map(t=>({...t,arrastrada:true}));
+  return [...arrastradas,...deHoy];
+}
+const fmtDia=f=>{const pt=String(f||'').split('-');return pt[2]&&pt[1]?pt[2]+'/'+pt[1]:f};
+function diasDe(per){
+  const hoy=hoyIso();
+  if(per!=='semana'&&per!=='rango')return [hoy];
+  let ini,fin;
+  if(per==='semana'){
+    const d=new Date();d.setHours(0,0,0,0);
+    const w=d.getDay();d.setDate(d.getDate()-(w===0?6:w-1));
+    ini=iso(d.getTime());fin=hoy;
+  }else{
+    const R=SES.empRango||{};
+    fin=(R.fin&&R.fin<hoy)?R.fin:hoy;
+    ini=R.ini||fin;
+    if(ini>fin){const t=ini;ini=fin;fin=t;}
+  }
+  const out=[];let d=new Date(ini+'T00:00:00');const lim=new Date(fin+'T00:00:00');
+  let n=0;
+  while(d<=lim&&n<31){out.push(iso(d.getTime()));d.setDate(d.getDate()+1);n++;}
+  return out;
+}
+function pendPorPersona(fecha){
+  const m={};
+  Object.keys(AREAS).forEach(a=>tareasDiaVisibles(a,fecha).forEach(t=>{
+    if(!t.resp)return;   /* sin responsable no aporta: la tarjeta es para ver a quién se le acumula */
+    const k=t.resp;
+    if(!m[k])m[k]={pend:0,hechas:0,arr:0};
+    if(hecha(t.id,fecha))m[k].hechas++;
+    else{m[k].pend++;if(t.arrastrada)m[k].arr++;}
+  }));
+  return Object.entries(m).sort((x,y)=>y[1].pend-x[1].pend);
+}
+const personasDe=a=>DB.personas.filter(p=>p.area===a&&!p.eliminada).sort((x,y)=>x.nombre.localeCompare(y.nombre));
+const idCheck=(tareaId,fecha)=>'chk_'+tareaId+'_'+fecha;
+const checkDe=(tareaId,fecha)=>DB.checks.find(c=>c.id===idCheck(tareaId,fecha));
+const hecha=(tareaId,fecha)=>{const c=checkDe(tareaId,fecha);return c&&c.hecho?c:null};
+function avanceArea(a,fecha){
+  const ts=tareasDe(a);
+  const done=ts.filter(t=>hecha(t.id,fecha)).length;
+  return {total:ts.length,done,pct:ts.length?Math.round(done/ts.length*100):0};
+}
+async function marcarTarea(tareaId,area,fecha,persona){
+  const id=idCheck(tareaId,fecha);
+  const ex=DB.checks.find(c=>c.id===id);
+  const previo=ex?{...ex}:null;
+  let marcado=false;
+  if(ex){
+    if(ex.hecho&&(!persona||persona===ex.persona)){ex.hecho=false;ex.persona='';}
+    else{ex.hecho=true;ex.persona=persona||ex.persona||'';marcado=true;}
+    ex.ts=Date.now();
+  }else{
+    DB.checks.push({id,tareaId,area,fecha,hecho:true,persona:persona||'',ts:Date.now(),marcadaPor:SES.nombre||''});
+    marcado=true;
+  }
+  /* respuesta inmediata: la marca se ve al instante y la selección se limpia
+     para que la siguiente tarea empiece desde cero */
+  if(marcado)SES.personaSel=null;
+  render();
+  const t=DB.tareas.find(x=>x.id===tareaId);
+  toast(marcado?('✓ '+((t&&t.texto)||'Tarea')+(persona?' · '+persona:'')):'Marca quitada');
+  /* el guardado corre detrás, pausando el sondeo para que no pise la marca */
+  SES.guardando=true;
+  const ok=await guardarDB();
+  SES.guardando=false;
+  if(!ok){
+    if(previo){const i=DB.checks.findIndex(c=>c.id===id);if(i>=0)DB.checks[i]=previo;}
+    else DB.checks=DB.checks.filter(c=>c.id!==id);
+    toast('No se pudo guardar la marca. Reintenta.');
+    render();
+  }
+}
+async function guardarLista(accion){
+  const copia=JSON.stringify({tareas:DB.tareas,personas:DB.personas});
+  accion();
+  render();                       /* el cambio se ve de inmediato */
+  SES.guardando=true;
+  const ok=await guardarDB();
+  SES.guardando=false;
+  if(!ok){
+    const v=JSON.parse(copia);DB.tareas=v.tareas;DB.personas=v.personas;
+    toast('No se pudo guardar. Reintenta.');
+    render();
+  }
+}
+
+/* ---------------- VISTA · SENSOR: tareas fijas ---------------- */
+function vSensorFijas(){
+  const a=SES.area, hoy=hoyIso(), ts=tareasDe(a), gente=personasDe(a), av=avanceArea(a,hoy);
+  const edit=SES.editandoTareas;
+  return `
+  <div class="card">
+    <div class="top-r" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span class="chip azul">${SENSOR[a]}</span>
+      <span class="xs mono muted" style="margin-left:auto">${fmt(Date.now()).split(' ')[0]} · ${new Date().toLocaleDateString('es-PE',{day:'numeric',month:'long'})}</span>
+    </div>
+    <h1 style="margin-top:8px">Tareas fijas del día</h1>
+    <div class="sm muted">Marca cada tarea del POE y elige quién la hizo. Se reinicia solo cada día.</div>
+    <div class="barra" style="margin-top:12px"><i style="width:${av.pct}%"></i></div>
+    <div class="row-av"><span class="mono sm">${av.done} de ${av.total}</span><span class="pct">${av.pct}%</span></div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px">
+      <div class="eyebrow" style="flex:1">Quiénes trabajan hoy</div>
+      <button class="btn quiet xs" id="pers-editar">${SES.editandoPersonas?'Listo':'Editar'}</button>
+    </div>
+    ${SES.editandoPersonas
+      ?`<div class="fchips" style="margin:0">
+          ${gente.map(p=>`<span class="pers edit">${esc(p.nombre)}
+            <button class="x" data-persdel="${p.id}" title="Quitar" aria-label="Quitar a ${esc(p.nombre)}">✕</button></span>`).join('')}
+          <button class="pers mas" id="pers-add" aria-label="Agregar persona">＋ Agregar</button>
+        </div>
+        <div class="xs muted" style="margin-top:8px">Toca ✕ dos veces para quitar a alguien, o ＋ para agregar. Al terminar, pulsa Listo.</div>`
+      :gente.length
+      ?`<div class="fchips" style="margin:0">${gente.map(p=>`
+          <button class="pers ${SES.personaSel===p.nombre?'on':''}" data-pers="${esc(p.nombre)}">${esc(p.nombre)}</button>`).join('')}</div>
+        <div class="xs muted" style="margin-top:8px">${SES.personaSel?'Marcando como <b>'+esc(SES.personaSel)+'</b>. Ahora toca las tareas del checklist que hizo.':'1. Toca el nombre de quien hizo la tarea · 2. Marca la tarea en el checklist.'}</div>`
+      :'<div class="xs muted">Aún no hay personas en esta área. Pulsa Editar y luego ＋ para agregar al menos una.</div>'}
+  </div>
+
+  ${(()=>{const td=tareasDiaVisibles(a,hoy);if(!td.length)return '';
+    const hech=td.filter(t=>hecha(t.id,hoy)).length;
+    const nArr=td.filter(t=>t.arrastrada&&!hecha(t.id,hoy)).length;
+    return `<div class="sec"><span class="eyebrow" style="color:var(--ambar)">Tareas del día · asignadas por el emprendedor</span>
+      <span class="xs muted">${hech} de ${td.length}${nArr?' · <b style="color:var(--rojo)">'+nArr+' de días anteriores</b>':''}</span></div>
+    <div class="card dia-card" style="padding:6px 14px">
+      ${td.map(t=>{const c=hecha(t.id,hoy);
+        return `<div class="tarea dia ${t.arrastrada?'arr':''} ${c?'ok':''}">
+          <button class="marca ${c?'on':''}" data-tcheck="${t.id}" aria-label="Marcar">${c?'✓':''}</button>
+          <div class="txt"><div>${t.arrastrada&&!c?`<span class="chip-arr">Pendiente desde ${fmtDia(t.fecha)}</span>`:''}${t.categoria?`<span class="chip-cat">${esc(t.categoria)}</span>`:''}${esc(t.texto)}</div>
+            <small class="mono">${c?esc(c.persona||'sin asignar')+' · '+hhmm(c.ts):(t.resp?'asignada a '+esc(t.resp):'sin responsable')}</small></div>
+        </div>`}).join('')}
+    </div>`})()}
+
+  <div class="sec"><span class="eyebrow">Checklist</span>
+    <button class="btn quiet xs" id="tar-editar">${edit?'Listo':'Editar tareas'}</button></div>
+
+  ${ts.length?`<div class="card" style="padding:6px 14px">
+    ${ts.map((t,ix)=>{
+      const c=hecha(t.id,hoy);
+      return `<div class="tarea ${c?'ok':''}">
+        ${edit?`<div class="ord">
+            <button class="btn quiet xs" data-tsube="${t.id}" ${ix===0?'disabled':''}>▲</button>
+            <button class="btn quiet xs" data-tbaja="${t.id}" ${ix===ts.length-1?'disabled':''}>▼</button>
+          </div>`
+        :`<button class="marca ${c?'on':''}" data-tcheck="${t.id}" aria-label="Marcar">${c?'✓':''}</button>`}
+        <div class="txt">
+          ${edit?`<input value="${esc(t.texto)}" data-tedit="${t.id}">`
+                :`<div>${t.categoria?`<span class="chip-cat">${esc(t.categoria)}</span>`:''}${esc(t.texto)}</div>
+                  ${c?`<small class="mono">${esc(c.persona||'sin asignar')} · ${hhmm(c.ts)}</small>`:'<small class="mono">pendiente</small>'}`}
+        </div>
+        ${edit?`<button class="btn quiet xs" data-tdel="${t.id}" style="color:var(--rojo)">Eliminar</button>`:''}
+      </div>`}).join('')}
+  </div>`:'<div class="empty">Aún no hay tareas fijas para esta área. Agrégalas según el POE del negocio.</div>'}
+
+  <div class="card">
+    <label class="f" style="margin:0"><span>Agregar tarea al POE de ${AREAS[a]}</span>
+      <input id="tar-nueva" placeholder="Ej.: Encender luces y abrir cortinas"></label>
+    <div class="actions"><button class="btn" id="tar-add">Agregar tarea</button></div>
+  </div>`;
+}
+
+/* ---------------- VISTA · EMPRENDEDOR: tareas fijas ---------------- */
+function vEmpFijas(){
+  const hoy=hoyIso();
+  if(!SES.empPeriodo)SES.empPeriodo='hoy';
+  const per=SES.empPeriodo;
+  const R=SES.empRango||{};
+  const perTxt=per==='semana'?'esta semana':(per==='rango'?((R.ini?fmtDia(R.ini):'inicio')+' – '+(R.fin?fmtDia(R.fin):'hoy')):'hoy');
+  const dias=diasDe(per);
+  const esHoy=per==='hoy';
+  const segm=`<div class="periodo-fila">
+    <svg class="periodo-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <div class="segmentos" role="group" aria-label="Periodo de tareas">
+      <button data-per="hoy" aria-pressed="${per==='hoy'}">Hoy</button>
+      <button data-per="semana" aria-pressed="${per==='semana'}">Esta semana</button>
+      <button data-per="rango" aria-pressed="${per==='rango'}">${per==='rango'?perTxt:'Elegir fechas'}</button>
+    </div>
+  </div>`;
+  const det=SES.areaDetalle;
+  if(det&&!esHoy){
+    /* detalle histórico: cumplimiento día por día del periodo */
+    const poe=tareasDe(det);
+    const filas=dias.slice().reverse().map(f=>{
+      const done=DB.checks.filter(c=>c.area===det&&c.hecho&&c.fecha===f&&poe.some(t=>t.id===c.tareaId)).length;
+      const pct=poe.length?Math.round(done*100/poe.length):0;
+      const td=DB.tareas.filter(t=>t.area===det&&!t.eliminada&&t.tipoTarea==='dia'&&t.fecha===f);
+      const tdOk=td.filter(t=>DB.checks.some(c=>c.tareaId===t.id&&c.hecho)).length;
+      return `<div class="kv"><span class="mono xs">${fmtDia(f)}${f===hoy?' · hoy':''}</span>
+        <b style="color:${pct>=80?'var(--verde)':(pct>=40?'var(--ambar)':'var(--rojo)')}">${poe.length?done+' de '+poe.length+' ('+pct+'%)':'—'}${td.length?' · <span style="color:var(--ambar)">+'+tdOk+'/'+td.length+' del día</span>':''}</b></div>`;
+    }).join('');
+    return `<button class="btn quiet" id="fij-volver">← Volver a todas las áreas</button>
+    ${segm}
+    <div class="card">
+      <div class="eyebrow">${AREAS[det]} · ${perTxt}</div>
+      <div class="sm muted" style="margin:6px 0 10px">Cumplimiento del POE día por día (con el POE actual de ${poe.length} tarea(s) como referencia).</div>
+      ${filas||'<div class="empty">Sin días en este periodo.</div>'}
+    </div>`;
+  }
+  if(det){
+    const ts=tareasDe(det), av=avanceArea(det,hoy);
+    return `<button class="btn quiet" id="fij-volver">← Volver a todas las áreas</button>
+    <div class="card">
+      <div class="eyebrow">${AREAS[det]}</div>
+      <h1 style="margin-top:4px">${av.done} de ${av.total} tareas · ${av.pct}%</h1>
+      <div class="barra" style="margin-top:10px"><i style="width:${av.pct}%"></i></div>
+    </div>
+    <div style="display:flex;justify-content:flex-start;margin:0 0 10px">
+      <button class="btn primary" id="emp-agrtarea">+ Agregar tarea</button>
+    </div>
+    ${(()=>{const td=tareasDiaVisibles(det,hoy);if(!td.length)return '';
+      const ed=SES.empEdit;
+      return `<div class="sec"><span class="eyebrow" style="color:var(--ambar)">Tareas del día</span></div>
+      <div class="card dia-card" style="padding:6px 14px">${td.map(t=>{const c=hecha(t.id,hoy);
+        const sd=ed&&SES.empDel&&SES.empDel.has(t.id);
+        return `<div class="tarea dia ${t.arrastrada?'arr':''} ${c?'ok':''} ${sd?'sdel':''}">
+          <span class="marca ${c?'on':''}" style="cursor:default">${c?'✓':''}</span>
+          <div class="txt"><div>${sd?'<span class="chip-del">Se eliminará al guardar</span>':''}${t.arrastrada&&!c?`<span class="chip-arr">Pendiente desde ${fmtDia(t.fecha)}</span>`:''}${t.categoria?`<span class="chip-cat">${esc(t.categoria)}</span>`:''}${esc(t.texto)}</div>
+            <small class="mono">${c?esc(c.persona||'sin asignar')+' · '+hhmm(c.ts):(t.resp?'asignada a '+esc(t.resp):'sin responsable')}</small></div>
+          ${ed?(sd?`<button class="btn quiet xs" data-etdel="${t.id}">Deshacer</button>`
+                 :`<button class="btn quiet xs" data-eted="${t.id}" title="Editar">✎</button>
+                  <button class="btn quiet xs" data-etdel="${t.id}" style="color:var(--rojo)" title="Eliminar">Eliminar</button>`):''}
+        </div>`}).join('')}</div>`})()}
+    <div class="sec"><span class="eyebrow">POE del área</span>
+      <button class="btn quiet xs" id="emp-editar">${SES.empEdit?'Listo':'Editar'}</button></div>
+    ${SES.empEdit?'<div class="xs muted" style="margin:-4px 2px 8px">Edita con ✎, mueve con ↑↓, quita con Eliminar. Nada cambia para el equipo hasta que toques <b>Guardar cambios</b>.</div>':''}
+    ${ts.length?`<div class="card" style="padding:6px 14px">${ts.map((t,ix)=>{
+      const c=hecha(t.id,hoy);
+      const sd=SES.empEdit&&SES.empDel&&SES.empDel.has(t.id);
+      return `<div class="tarea ${c?'ok':''} ${sd?'sdel':''}">
+        <span class="marca ${c?'on':''}" style="cursor:default">${c?'✓':''}</span>
+        <div class="txt"><div>${sd?'<span class="chip-del">Se eliminará al guardar</span>':''}${t.categoria?`<span class="chip-cat">${esc(t.categoria)}</span>`:''}${esc(t.texto)}</div>
+          <small class="mono">${c?esc(c.persona||'sin asignar')+' · '+hhmm(c.ts):('pendiente'+(t.resp?' · asignada a '+esc(t.resp):''))}</small></div>
+        ${SES.empEdit?(sd?`<button class="btn quiet xs" data-etdel="${t.id}">Deshacer</button>`:`
+          <button class="btn quiet xs" data-etsube="${t.id}" ${ix===0?'disabled':''} title="Subir">↑</button>
+          <button class="btn quiet xs" data-etbaja="${t.id}" ${ix===ts.length-1?'disabled':''} title="Bajar">↓</button>
+          <button class="btn quiet xs" data-eted="${t.id}" title="Editar">✎</button>
+          <button class="btn quiet xs" data-etdel="${t.id}" style="color:var(--rojo)" title="Eliminar">Eliminar</button>`):''}
+      </div>`}).join('')}</div>`:'<div class="empty">Esta área todavía no tiene tareas fijas definidas.</div>'}
+    ${SES.empEdit?`<div class="actions" style="margin-top:12px">
+      <button class="btn primary" id="emp-guardar" style="flex:2;min-width:170px">Guardar cambios${(SES.empDel&&SES.empDel.size)?' · '+SES.empDel.size+' eliminación(es)':''}</button>
+      <button class="btn quiet" id="emp-cancelar" style="flex:1">Cancelar</button>
+    </div>`:''}`;
+  }
+  const _hoy=hoyIso();
+  const pp=pendPorPersona(_hoy);
+  return `<div class="card">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <h1 style="flex:1;margin:0">Tareas fijas</h1>
+      <span class="vivo"><i></i>EN VIVO · <span id="vivo-t">hace 0 s</span></span>
+    </div>
+    <div class="sm muted" style="margin-top:4px">${esHoy
+      ?'Cumplimiento del POE de hoy por área. Toca un área para ver el detalle. Las marcas las hacen los sensores; aquí puedes agregar tareas del día y asignar responsables.'
+      :'Cumplimiento acumulado del periodo por área. Toca un área para ver el día por día. Para agregar o editar tareas, vuelve a Hoy.'}</div>
+  </div>
+  ${segm}
+
+  ${(esHoy&&pp.length)?`<div class="card">
+    <div class="eyebrow" style="margin-bottom:6px">Pendientes por persona · hoy</div>
+    ${pp.map(([nom,v])=>`<div class="kv"><span>${esc(nom)}</span>
+      <b style="color:${v.arr?'var(--rojo)':(v.pend?'var(--ambar)':'var(--verde)')}">${v.pend?v.pend+' pendiente(s)':'al día'}${v.arr?' ('+v.arr+' de días anteriores)':''}${v.hechas?' · '+v.hechas+' hecha(s)':''}</b></div>`).join('')}
+  </div>`:''}
+  ${Object.keys(AREAS).map(a=>{
+    if(!esHoy){
+      /* modo histórico: cumplimiento acumulado del periodo con el POE actual como referencia */
+      const poe=tareasDe(a);
+      const posibles=poe.length*dias.length;
+      const hech=DB.checks.filter(c=>c.area===a&&c.hecho&&dias.includes(c.fecha)&&poe.some(t=>t.id===c.tareaId)).length;
+      const pctH=posibles?Math.round(hech*100/posibles):0;
+      const tdPer=DB.tareas.filter(t=>t.area===a&&!t.eliminada&&t.tipoTarea==='dia'&&dias.includes(t.fecha));
+      const tdOk=tdPer.filter(t=>DB.checks.some(c=>c.tareaId===t.id&&c.hecho)).length;
+      const colorH=posibles===0?'var(--muted)':(pctH>=80?'var(--verde)':(pctH<40?'var(--rojo)':'var(--ambar)'));
+      return `<button class="card areaBtn" data-areadet="${a}" style="width:100%;text-align:left;cursor:pointer">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+          <span class="av">${AV[a]}</span>
+          <div style="flex:1;min-width:140px"><h2 style="margin:0">${AREAS[a]}</h2>
+            <div class="xs muted">${posibles?hech+' de '+posibles+' marcas en '+dias.length+' día(s)':'sin tareas definidas'}${tdPer.length?' · <b style="color:var(--ambar)">+'+tdOk+'/'+tdPer.length+' del día</b>':''}</div></div>
+          ${genteIconos(a)}
+          <span class="pct" style="color:${colorH}">${posibles?pctH+'%':'—'}</span>
+        </div>
+        <div class="barra" style="margin-top:10px"><i style="width:${posibles?pctH:0}%"></i></div>
+      </button>`;
+    }
+    const av=avanceArea(a,hoy);
+    const color=av.total===0?'var(--muted)':(av.pct===100?'var(--verde)':(av.pct<50?'var(--rojo)':'var(--ambar)'));
+    return `<button class="card areaBtn" data-areadet="${a}" style="width:100%;text-align:left;cursor:pointer">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <span class="av">${AV[a]}</span>
+        <div style="flex:1;min-width:140px"><h2 style="margin:0">${AREAS[a]}</h2>
+          <div class="xs muted">${av.total?av.done+' de '+av.total+' tareas completadas':'sin tareas definidas'}${(()=>{const td=tareasDiaVisibles(a,hoyIso());if(!td.length)return '';
+            const nArr=td.filter(t=>t.arrastrada&&!hecha(t.id,hoyIso())).length;
+            return ' · <b style="color:var(--ambar)">+'+td.length+' del día ('+td.filter(t=>hecha(t.id,hoyIso())).length+' hechas)</b>'+(nArr?' · <b style="color:var(--rojo)">'+nArr+' arrastrada(s)</b>':'');})()}</div></div>
+        ${genteIconos(a)}
+        <div style="font-family:var(--display);font-size:22px;font-weight:700;color:${color}">${av.total?av.pct+'%':'—'}</div>
+      </div>
+      <div class="barra" style="margin-top:10px"><i style="width:${av.pct}%;background:${color}"></i></div>
+    </button>`}).join('')}`;
+}
+
+/* =====================================================================
+   VISTA · EMPRENDEDOR
+   ===================================================================== */
+
+/* ---------- incidentes del emprendedor: cartillas deslizables + ficha ---------- */
+/* el texto vivo de un incidente es su última actualización; el original queda en la ficha */
+function textoVivo(r){
+  const a=r.actualizaciones;
+  return (a&&a.length)?a[a.length-1].texto:(r.texto||r.transcript||'(solo adjuntos)');
+}
+function miniInc(r){
+  const critico=r.prioridad==='alta'&&r.estado!=='resuelto';
+  const cEstado=r.estado==='resuelto'?'verde':(r.estado==='revisado'?'azul':'rojo');
+  return `<button class="inc-mini ${critico?'critico':''} ${r.estado==='resuelto'?'res':''}" data-abririnc="${r.id}">
+    <span class="im-top">
+      ${!r.visto?'<span class="chip verde">Nuevo</span>':''}
+      <span class="chip ${r.prioridad==='alta'?'rojo':(r.prioridad==='media'?'ambar':'')}">${r.prioridad}</span>
+      ${r.estado!=='abierto'?`<span class="chip ${cEstado}">${r.estado}</span>`:''}
+    </span>
+    <span class="im-txt">${(r.actualizaciones&&r.actualizaciones.length)?'<i class="viv">↻ Actualizado '+hhmm(r.actualizaciones[r.actualizaciones.length-1].ts)+'</i>':''}${esc(textoVivo(r))}</span>
+    <span class="im-pie">
+      <span>${AREAS[r.area]}</span>
+      <span class="mono">${fmt(r.ts)}${(r.actualizaciones&&r.actualizaciones.length)?' · ↻'+r.actualizaciones.length:''}${r.nFotos?' · 📷':''}${r.hasAudio?' · 🎙':''}</span>
+    </span>
+  </button>`;
+}
+async function cambiarEstado(r,estado){
+  const previo=r.estado;
+  if(previo===estado)return;
+  r.estado=estado;
+  render();
+  toast('Incidente marcado como '+estado);
+  SES.guardando=true;
+  const ok=await guardarDB();
+  SES.guardando=false;
+  if(!ok){r.estado=previo;toast('No se pudo guardar el cambio. Reintenta.');render();}
+}
+function dialogoListado(){
+  const f=SES.filtro;
+  const inc=incidentes().filter(r=>!f||r.area===f).sort((a,b)=>b.ts-a.ts);  // el más reciente arriba
+  $('#dlg-in').innerHTML=`
+    <div style="display:flex;align-items:baseline;gap:10px">
+      <span class="sec-t" style="flex:1">Incidentes${f?' · '+AREAS[f]:''}</span>
+      <span class="xs muted">${inc.length} en total</span>
+    </div>
+    <div class="xs muted" style="margin:2px 0 10px">Ordenados por hora, el más reciente primero. Toca uno para el detalle.</div>
+    ${inc.length?`<div class="lista-acts" style="padding:0 2px">${inc.map(r=>`
+      <button class="act-row" data-abririnc="${r.id}">
+        <span class="ar-top">
+          ${!r.visto?'<span class="chip verde">Nuevo</span>':''}
+          <span class="chip ${r.prioridad==='alta'?'rojo':(r.prioridad==='media'?'ambar':'')}">${r.prioridad}</span>
+          ${r.estado!=='abierto'?`<span class="chip ${r.estado==='resuelto'?'verde':'azul'}">${r.estado}</span>`:''}
+          <span class="mono xs muted" style="margin-left:auto">${fmt(r.ts)}</span>
+        </span>
+        <span class="ar-txt">${esc(textoVivo(r))}</span>
+        <span class="xs muted">${AREAS[r.area]}${(r.actualizaciones&&r.actualizaciones.length)?' · ↻'+r.actualizaciones.length:''}${r.nFotos?' · 📷':''}${r.hasAudio?' · 🎙':''}</span>
+      </button>`).join('')}</div>`:'<div class="empty">Sin incidentes.</div>'}
+    <div class="actions"><button class="btn quiet" id="dlg-xl" style="flex:1">Cerrar</button></div>`;
+  abrirDlg();
+  $('#dlg-xl').onclick=()=>$('#dlg').close();
+}
+const abrirDlg=()=>{const d=$('#dlg');if(!d.open)d.showModal();};
+function dialogoIncidente(id){
+  const r=DB.registros.find(x=>x.id===id);if(!r)return;
+  const esInc=r.tipo==='incidente';
+  /* abrirlo cuenta como leído: el tag "Nuevo" desaparece de la lista */
+  if(esInc&&!r.visto){
+    r.visto=true;render();
+    SES.guardando=true;
+    guardarDB().finally(()=>{SES.guardando=false;});
+  }
+  const rel=esInc?avisosDe(r.id):[];
+  const pinta=()=>{
+    $('#dlg-in').innerHTML=`
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+      <span class="chip azul">${AREAS[r.area]}</span>
+      ${esInc?chipPrio(r.prioridad):'<span class="chip">Actividad</span>'}
+      <span class="xs mono muted" style="margin-left:auto">${fmt(r.ts)}</span>
+    </div>
+    ${(r.actualizaciones&&r.actualizaciones.length)?`<div class="sm" style="margin:12px 0 0"><span class="chip verde" style="margin-right:6px">↻ ${hhmm(r.actualizaciones[r.actualizaciones.length-1].ts)}</span>${esc(r.actualizaciones[r.actualizaciones.length-1].texto)}</div>
+      <div class="xs muted" style="margin:8px 0 0">Reporte inicial · ${hhmm(r.ts)}</div>
+      <div class="sm" style="margin:2px 0 0;color:var(--ink-2)">${esc(r.texto||r.transcript||'(solo adjuntos)')}</div>`
+    :(r.texto?`<div class="sm" style="margin:12px 0 0">${esc(r.texto)}</div>`:'')}
+    ${r.transcript&&r.texto?`<div class="transc"><div class="eyebrow">Audio transcrito</div>${esc(r.transcript)}</div>`:(r.transcript&&!(r.actualizaciones&&r.actualizaciones.length)?'':'')}
+    ${(r.actualizaciones&&r.actualizaciones.length>1)?`<div class="segui">
+      <div class="eyebrow" style="margin-bottom:5px">Seguimiento anterior</div>
+      ${r.actualizaciones.slice(0,-1).map(x=>`<div class="seg-item">
+        <span class="mono xs muted">${fmt(x.ts)}${SES.perfil==='emprendedor'?'':(x.persona?' · '+esc(x.persona):'')}</span>
+        <div class="sm">${esc(x.texto)}</div>
+      </div>`).join('')}
+    </div>`:''}
+    <div id="dlg-media">${mediaHtml(r)}</div>
+    ${rel.map(a=>`<div class="aviso-lig"><div class="eyebrow">${esc(a.tipoAviso)} del analista · ${fmt(a.ts)}</div>${esc(a.texto)}</div>`).join('')}
+    ${SES.perfil==='emprendedor'?`<div class="est-fila" style="border-top:0;margin-top:10px;padding-top:0">
+      <button class="btn-preg" id="dlg-pregreg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="13" y2="13"/></svg>Preguntar al analista</button>
+    </div>`:''}
+    ${esInc?`<div class="est-fila">
+      <span class="xs muted">Marcar como</span>
+      <button class="btn xs estb ${r.estado==='revisado'?'on-az':''}" data-estdlg="revisado">Revisado</button>
+      <button class="btn xs estb ${r.estado==='resuelto'?'on-vd':''}" data-estdlg="resuelto">Resuelto</button>
+      <button class="btn quiet xs" id="dlg-xi" style="margin-left:auto">Cerrar</button>
+    </div>`
+    :'<div class="est-fila"><button class="btn quiet xs" id="dlg-xi" style="margin-left:auto">Cerrar</button></div>'}`;
+    $('#dlg-xi').onclick=()=>$('#dlg').close();
+    const pb=$('#dlg-pregreg');
+    if(pb)pb.onclick=()=>dialogoPreguntaRegistro(r.id);
+    $('#dlg-in').querySelectorAll('[data-estdlg]').forEach(b=>{
+      b.onclick=()=>{
+        const prom=cambiarEstado(r,b.dataset.estdlg); /* cambio síncrono por dentro */
+        pinta();                                       /* el diálogo responde al toque */
+        prom.then(pinta);                              /* y se corrige si el servidor revierte */
+      };
+    });
+  };
+  pinta();
+  abrirDlg();
+  if((r.nFotos||r.hasAudio)&&!r.mediaPerdida&&!MEDIA.has(r.id)){
+    MEDIA.set(r.id,'cargando');
+    sGet(K_MEDIA+r.id).then(m=>{MEDIA.set(r.id,m||'error');const el=$('#dlg-media');if(el)el.innerHTML=mediaHtml(r);});
+  }
+}
+
+/* periodo de la vista diaria del emprendedor */
+const enPeriodo=(ts,per)=>{
+  if(per==='semana'){
+    /* semana calendario: arranca el lunes 00:00 y el siguiente lunes empieza otra */
+    const d=new Date();d.setHours(0,0,0,0);
+    const dow=d.getDay();                       // 0=domingo
+    d.setDate(d.getDate()-(dow===0?6:dow-1));   // retroceder hasta el lunes
+    return ts>=d.getTime();
+  }
+  if(per==='rango'){
+    const R=SES.empRango||{};
+    const d=iso(ts);
+    if(!R.ini&&!R.fin)return false;
+    if(R.ini&&d<R.ini)return false;
+    if(R.fin&&d>R.fin)return false;
+    return true;
+  }
+  return iso(ts)===hoyIso();
+};
+function vEmpDiaria(){
+  if(!SES.empPeriodo)SES.empPeriodo='hoy';
+  if(!SES.actLim)SES.actLim=10;
+  if(!SES.empDescPer)SES.empDescPer='hoy';
+  const per=SES.empPeriodo;
+  const R=SES.empRango||{};
+  const perTxt=per==='semana'?'esta semana':(per==='rango'?((R.ini?fmtDia(R.ini):'inicio')+' – '+(R.fin?fmtDia(R.fin):'hoy')):'hoy');
+  const f=SES.filtro;
+  /* un incidente pertenece al periodo por la fecha de CREACIÓN de su cartilla;
+     los abiertos de fechas anteriores no desaparecen: se anuncian debajo y se
+     muestran a pedido */
+  const incTodosA=incidentes().filter(r=>!f||r.area===f);
+  const inc=incTodosA.filter(r=>SES.incTodos?true:enPeriodo(r.ts,per)).sort((a,b)=>{
+    const res=(a.estado==='resuelto')-(b.estado==='resuelto');
+    if(res)return res;
+    return (PRIO[a.prioridad]-PRIO[b.prioridad])||b.ts-a.ts;
+  });
+  const incOcultos=SES.incTodos?[]:incTodosA.filter(r=>r.estado!=='resuelto'&&!enPeriodo(r.ts,per));
+  const acts=actividades().filter(r=>(!f||r.area===f)&&enPeriodo(r.ts,per)).sort((a,b)=>b.ts-a.ts);
+  const abiertos=inc.filter(r=>r.estado!=='resuelto');
+  const altas=abiertos.filter(r=>r.prioridad==='alta').length;
+  const totalAltas=incidentes().filter(r=>r.estado!=='resuelto'&&r.prioridad==='alta').length;
+  const hoyAct=actividades().filter(r=>iso(r.ts)===hoyIso()).length;
+  return `
+  <div class="card">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <h1 style="flex:1;margin:0">Actividad diaria</h1>
+      <span class="vivo"><i></i>EN VIVO · <span id="vivo-t">hace 0 s</span></span>
+    </div>
+    <div class="sm muted" style="margin-top:4px">Primero lo que altera la operación, después el registro cotidiano de las tres áreas.</div>
+  </div>
+  ${(()=>{
+    const abT=incidentes().filter(r=>r.estado!=='resuelto');
+    const alT=abT.filter(r=>r.prioridad==='alta').length;
+    const actHoy=actividades().filter(r=>enPeriodo(r.ts,per)).length;
+    const tf=Object.keys(AREAS).map(a=>avanceArea(a,hoyIso()));
+    const tfTot=tf.reduce((x,y)=>x+y.total,0), tfDone=tf.reduce((x,y)=>x+y.done,0);
+    const tfPct=tfTot?Math.round(tfDone/tfTot*100):0;
+    const cInc=alT?'var(--rojo)':(abT.length?'var(--ambar)':'var(--verde)');
+    const cTf=tfTot===0?'var(--muted)':(tfPct===100?'var(--verde)':(tfPct<50?'var(--rojo)':'var(--ambar)'));
+    return `<div class="card res3">
+    <button class="rcol" data-goscroll="sec-inc" title="Ir a incidentes">
+      <span class="rnum" style="color:${alT?'var(--rojo)':'inherit'}"><i class="dot" style="background:${cInc}"></i>${abT.length}</span>
+      <span class="rlab">Incidentes abiertos${alT?' · '+alT+' alta':''}</span>
+    </button>
+    <button class="rcol" data-goscroll="sec-act" title="Ir a actividades">
+      <span class="rnum"><i class="dot" style="background:var(--azul)"></i>${actHoy}</span>
+      <span class="rlab">Actividades · ${perTxt}</span>
+    </button>
+    <button class="rcol" data-gotab="fijas" title="Ver tareas fijas">
+      <span class="rnum" style="color:${cTf}">${tfTot?tfPct+'%':'—'}</span>
+      <span class="rlab">Tareas fijas</span>
+    </button>
+  </div>`})()}
+  <div class="periodo-fila">
+    <svg class="periodo-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    <div class="segmentos" role="group" aria-label="Periodo de la vista">
+      <button data-per="hoy" aria-pressed="${per==='hoy'}">Hoy</button>
+      <button data-per="semana" aria-pressed="${per==='semana'}">Esta semana</button>
+      <button data-per="rango" aria-pressed="${per==='rango'}">${per==='rango'?perTxt:'Elegir fechas'}</button>
+    </div>
+  </div>
+  <div class="fchips">
+    <button data-fa="" aria-pressed="${f===''}">Todas</button>
+    ${Object.keys(AREAS).map(a=>`<button data-fa="${a}" aria-pressed="${f===a}">${AREAS[a]}</button>`).join('')}
+  </div>
+
+  <div class="sec" id="sec-inc"><span class="sec-t">Incidentes</span>
+    <span class="xs muted">Desliza para ver más</span>
+    <span class="xs muted" style="margin-left:auto">${abiertos.length} ${SES.incTodos?'abierto(s) · todos':'abierto(s) de '+perTxt}</span></div>
+  ${f&&totalAltas>altas?`<div class="xs muted" style="margin:-4px 2px 10px">Hay ${totalAltas-altas} incidente(s) de prioridad alta en otras áreas.</div>`:''}
+  ${inc.length?`<div class="carrusel">${inc.map(miniInc).join('')}</div>
+    <div style="display:flex;justify-content:center;margin:0 0 8px">
+      <button class="btn quiet xs" id="ver-listado">Ver en listado</button>
+    </div>`
+    :`<div class="empty">${f?'Sin incidentes de '+AREAS[f]+'.':'No hay incidentes registrados.'}</div>`}
+
+  ${incOcultos.length?`<div style="display:flex;justify-content:center;margin:-2px 0 10px">
+    <button class="btn quiet xs" id="inc-vermas">Mostrar ${incOcultos.length} abierto(s) de días anteriores</button></div>`
+   :(SES.incTodos?`<div style="display:flex;justify-content:center;margin:-2px 0 10px">
+    <button class="btn quiet xs" id="inc-vermas">Volver a ver solo ${perTxt}</button></div>`:'')}
+  <div class="sec" id="sec-act"><span class="sec-t">Actividades</span>
+    <span class="xs muted" style="margin-left:auto">${acts.length} registro(s)</span></div>
+  ${acts.length?`<div class="card lista-acts">${acts.slice(0,SES.actLim).map(r=>`
+    <button class="act-row" data-abririnc="${r.id}">
+      <span class="ar-top"><span class="chip azul">${AREAS[r.area]}</span>
+        <span class="mono xs muted" style="margin-left:auto">${fmt(r.ts)}${r.nFotos?' · 📷':''}${r.hasAudio?' · 🎙':''}</span></span>
+      <span class="ar-txt">${esc(r.texto||r.transcript||'(solo adjuntos)')}</span>
+    </button>`).join('')}</div>
+    ${acts.length>SES.actLim?`<div style="display:flex;justify-content:center;margin:2px 0 8px">
+      <button class="btn quiet xs" id="act-mas">Cargar 10 más · quedan ${acts.length-SES.actLim}</button></div>`:''}`
+    :`<div class="empty">${f?'Sin actividades de '+AREAS[f]+' en este periodo.':'Sin actividades en este periodo.'}</div>`}
+  ${DB.registros.length?(()=>{const dp=SES.empDescPer;
+    const nDesc=DB.registros.filter(r=>dp==='todo'||enPeriodo(r.ts,dp)).length;
+    return `<div class="card" style="margin-top:14px">
+    <div class="eyebrow" style="margin-bottom:4px">Tus datos</div>
+    <div class="sm muted">Descarga lo registrado: incidentes, actividades, tareas y consultas.</div>
+    <div class="fchips" style="margin:10px 0 4px">
+      <button data-descper="hoy" aria-pressed="${dp==='hoy'}">Reporte de hoy</button>
+      <button data-descper="semana" aria-pressed="${dp==='semana'}">Esta semana</button>
+      <button data-descper="todo" aria-pressed="${dp==='todo'}">Todo</button>
+    </div>
+    <div class="actions" style="margin-top:8px">
+      <button class="btn" id="emp-csv" style="flex:1;min-width:140px" ${nDesc?'':'disabled'}>Tabla (Excel) · ${nDesc}</button>
+      <button class="btn quiet" id="emp-json" style="flex:1;min-width:140px" ${nDesc?'':'disabled'}>Respaldo JSON</button>
+    </div>
+  </div>`})():''}`;
+}
+
+function vEmpAnalista(){
+  const avs=DB.avisos.slice().sort((a,b)=>b.ts-a.ts);
+  const cs=DB.consultas.filter(c=>!c.eliminada).sort((a,b)=>b.ts-a.ts);
+  return `
+  <div class="card">
+    <h1>Reporte del analista</h1>
+    <div class="sm muted">Lo que el analista te envía: recomendaciones, riesgos, tendencias, alertas preventivas y resúmenes. Incluye las alertas automáticas por incidentes de prioridad alta.</div>
+  </div>
+  ${avs.length?avs.map(a=>`<div class="card rep ${a.leido?'':'noleido'}">
+    <div class="rep-top">
+      <span class="chip ${a.origen==='sistema'?'rojo':(a.tipoAviso==='Riesgo detectado'?'rojo':/preventiv/i.test(a.tipoAviso)?'ambar':/Balance|Resumen/i.test(a.tipoAviso)?'azul':'verde')}">${esc(a.tipoAviso)}</span>
+      ${a.leido?'':'<span class="chip ambar">Nueva</span>'}
+      ${a.origen==='sistema'?'<span class="chip">Automática</span>':''}
+      <span class="mono xs muted" style="margin-left:auto">${fmt(a.ts)}</span>
+    </div>
+    <div class="rep-txt">${esc(a.texto)}</div>
+    <div class="rep-pie">
+      <button class="btn-ver" data-veraviso="${a.id}"><span class="mas">+</span>Ver detalle</button>
+      <button class="btn-preg" data-pregrep="${a.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="13" y2="13"/></svg>Preguntar</button>
+      ${a.leido?'':`<button class="btn-leida" data-leido="${a.id}">Marcar leída</button>`}
+    </div>
+  </div>`).join(''):'<div class="empty">Aún no hay reportes del analista.</div>'}
+
+  <div class="sec"><span class="eyebrow">Preguntar al analista</span></div>
+  <div class="card">
+    <div class="sm muted">Tu pregunta le llega con fecha y hora. Él responde usando la base de registros.</div>
+    <label class="f" style="margin-top:12px"><span>Tu pregunta</span>
+      <textarea id="q-texto" rows="3" placeholder="Sobre la operación: qué se repite, dónde hay más problemas, qué hacer"></textarea></label>
+    <div class="fchips" style="margin-bottom:4px">
+      ${['¿Cuáles fueron las incidencias más frecuentes esta semana?','¿Qué problemas se repiten en producción?','¿Qué área presenta más incidentes hoy?','¿Qué acciones recomiendas para reducir estos incidentes?']
+        .map(q=>`<button data-sugerida="${esc(q)}">${q}</button>`).join('')}
+    </div>
+    <div class="actions"><button class="btn primary" id="q-enviar">Enviar al analista</button></div>
+  </div>
+  ${cs.length?`<div class="sec"><span class="eyebrow">Tus preguntas</span></div>`+cs.map(c=>`<div class="card">
+    <div class="qa-q"><div class="xs mono muted" style="margin-bottom:3px">${fmt(c.ts)} · tú${(()=>{const ra=c.refAviso&&DB.avisos.find(a=>a.id===c.refAviso);if(ra)return ' · sobre el reporte "'+esc(ra.tipoAviso)+'"';
+      const rr=c.refRegistro&&DB.registros.find(x=>x.id===c.refRegistro);return rr?' · sobre '+(rr.tipo==='incidente'?'un incidente':'una actividad')+' de '+AREAS[rr.area]:''})()}</div>${esc(c.pregunta)}</div>
+    ${c.respuesta
+      ?`<div class="qa-r"><div class="xs mono muted" style="margin-bottom:3px">${fmt(c.respuesta.ts)} · Analista${c.respuesta.fuente?' · '+(FUENTES_CONSULTA[c.respuesta.fuente]||''):''}</div>${esc(c.respuesta.texto)}
+        ${c.respuesta.sustento?`<div style="margin-top:8px"><button class="btn quiet xs" data-verresp="${c.id}">Ver los datos usados${(c.respuesta.refs&&c.respuesta.refs.length)?' · '+c.respuesta.refs.length+' registro(s)':''}</button></div>`:''}</div>`
+      :'<div class="chip ambar">Esperando respuesta del analista</div>'}
+  </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:6px">
+      <button class="btn quiet xs" data-qdel="${c.id}" style="color:var(--muted)">Eliminar pregunta</button>
+    </div>`).join(''):''}`;
+}
+
+/* =====================================================================
+   VISTA · ANALISTA
+   ===================================================================== */
+function statsBase(dias){
+  const desde=Date.now()-(dias||7)*86400000;
+  const rs=lista().filter(i=>i.ts>=desde);
+  const por={};Object.keys(AREAS).forEach(a=>por[a]=rs.filter(i=>i.area===a).length);
+  const incs=rs.filter(r=>r.tipo==='incidente');
+  const stop=new Set('de la el en los las que una uno con por para del sin muy hay fue este esta hoy ayer mas más pero como cuando donde tiene hacer se un al lo su ya no si es era son están esta estaba'.split(' '));
+  const freq={};
+  rs.forEach(i=>String((i.texto||'')+' '+(i.transcript||'')).toLowerCase().replace(/[^a-záéíóúñü\s]/g,' ').split(/\s+/)
+    .filter(w=>w.length>3&&!stop.has(w)).forEach(w=>freq[w]=(freq[w]||0)+1));
+  const top=Object.entries(freq).filter(e=>e[1]>1).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  return {rs,por,top,incs};
+}
+
+/* =====================================================================
+   CHAT CON CLAUDE (analista)
+   La conversación vive en esta sesión del dispositivo (no en la base
+   compartida). Cada pregunta viaja al servidor propio /api/ia, que
+   guarda la clave de Anthropic como variable de entorno.
+   ===================================================================== */
+function baseParaChat(){
+  const rs=DB.registros.slice().sort((a,b)=>a.ts-b.ts).slice(-200);
+  const lineas=rs.map(r=>'['+(iso(r.ts)===hoyIso()?'★HOY ':'')+iso(r.ts)+' '+hhmm(r.ts)+'] '+r.tipo.toUpperCase()
+    +(r.prioridad?'('+r.prioridad+', '+(r.estado||'abierto')+')':'')
+    +' · '+(AREAS[r.area]||r.area)+' · '+(r.persona||'')+': '
+    +String(r.texto||r.transcript||'(solo adjuntos)').replace(/\s+/g,' ').slice(0,220)
+    +((r.actualizaciones&&r.actualizaciones.length)?' | SEGUIMIENTO: '+r.actualizaciones.map(x=>hhmm(x.ts)+' '+x.texto.replace(/\s+/g,' ')).slice(-3).join(' → ').slice(0,200):''));
+  const hoy=hoyIso();
+  const tf=Object.keys(AREAS).map(a=>{const av=avanceArea(a,hoy);
+    return (AREAS[a]||a)+': '+(av.total?av.done+' de '+av.total+' ('+av.pct+'%)':'sin tareas')}).join(' · ');
+  const marcas=DB.checks.filter(c=>c.hecho).slice(-80).map(c=>{
+    const t=DB.tareas.find(x=>x.id===c.tareaId);
+    return '['+c.fecha+' '+hhmm(c.ts)+'] '+(AREAS[c.area]||c.area)+' · "'+((t&&t.texto)||'tarea')+'" hecha por '+(c.persona||'sin asignar');
+  });
+  return 'Eres el copiloto de análisis de un analista de operaciones de FUSE, una PyME peruana de ropa con tres áreas: Tienda/Despacho, Producción·Serigrafía y Ventas Web. '
+    +'Tu ÚNICA fuente es la data de abajo, recopilada en campo por sensores humanos. Responde en español peruano claro, directo y accionable, en texto plano sin Markdown. '
+    +'Cita horas y áreas concretas cuando afirmes algo. Si la data no alcanza para responder, dilo sin inventar. Sé breve: el analista está trabajando en vivo.\n'
+    +'HOY ES '+hoyIso()+' y son las '+hhmm(Date.now())+'. Los registros de HOY están marcados con ★HOY. '
+    +'REGLA TEMPORAL: si la pregunta dice "hoy", usa EXCLUSIVAMENTE los registros ★HOY; si hoy no hay registros de eso, dilo. '
+    +'Los días anteriores solo entran si la pregunta pide historial, semana o comparación.\n\n'
+    +'=== REGISTROS ('+rs.length+' más recientes de '+DB.registros.length+' totales) ===\n'+(lineas.join('\n')||'(vacío)')
+    +'\n\n=== TAREAS FIJAS (POE) DE HOY ===\n'+tf
+    +(marcas.length?'\nMarcas: \n'+marcas.join('\n'):'')
+    +'\n\n=== CONTEXTO ===\nConsultas del emprendedor: '+DB.consultas.filter(c=>!c.eliminada).length
+    +' ('+DB.consultas.filter(c=>!c.respuesta&&!c.eliminada).length+' sin responder) · Reportes enviados: '
+    +DB.avisos.filter(a=>a.origen==='analista').length;
+}
+function vAnChat(){
+  if(!SES.chat)SES.chat=[];
+  const msgs=SES.chat;
+  const AVC='<span class="av-c">✳</span>';
+  return `<div class="card chat-shell">
+    <div class="chat-top">
+      ${AVC}
+      <div style="flex:1;min-width:0">
+        <b style="font-size:14px">Claude</b>
+        <div class="xs ${SES.chatCargando?'':'muted'}" style="color:${SES.chatCargando?'var(--verde)':''}">${SES.chatCargando?'escribiendo…':'copiloto de análisis · lee la base en cada pregunta'}</div>
+      </div>
+      ${msgs.length?'<button class="btn quiet xs" id="ch-limpiar">Nueva conversación</button>':''}
+    </div>
+
+    <div class="chat-scroll" id="chat-scroll">
+      ${msgs.length?msgs.map((m,i)=>
+        m.role==='user'
+        ?`<div class="msg yo"><div class="burb">${esc(m.content)}</div><span class="mst mono">${hhmm(m.ts)}</span></div>`
+        :`<div class="msg ia">${AVC}
+            <div class="mcol">
+              <div class="burb">${esc(m.content)}</div>
+              <div class="mfila"><span class="mst mono">${hhmm(m.ts)}</span>
+                <button class="btn-copiar" data-copiar="${i}" title="Copiar respuesta">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copiar</button>
+              </div>
+            </div>
+          </div>`).join('')
+      :`<div class="chat-vacio">
+          <span class="av-c grande">✳</span>
+          <b>Hola, soy Claude</b>
+          <div class="sm muted" style="max-width:340px">Pregúntame sobre la data que van recopilando: patrones, horas pico, comparaciones entre áreas o un borrador de reporte.</div>
+          <div class="fchips" style="justify-content:center;margin-top:6px">
+            ${['¿Qué patrones ves en los incidentes de hoy?','¿En qué franja horaria se concentran los problemas?','Compara la actividad de las tres áreas','¿Qué área va atrasada con sus tareas fijas?','Redáctame un borrador de balance del día']
+              .map(q=>`<button data-chsug="${esc(q)}">${q}</button>`).join('')}
+          </div>
+        </div>`}
+      ${SES.chatCargando?`<div class="msg ia">${AVC}<div class="mcol"><div class="burb escribiendo"><i></i><i></i><i></i></div></div></div>`:''}
+    </div>
+
+    <div class="chat-comp">
+      <textarea id="ch-texto" rows="1" placeholder="Escribe tu pregunta…">${esc(SES.chatDraft||'')}</textarea>
+      <button class="btn-send" id="ch-enviar" ${SES.chatCargando?'disabled':''} aria-label="Enviar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+    <div class="xs muted" style="padding:0 14px 10px;text-align:center">Enter envía · Shift+Enter hace salto de línea · cada respuesta trae su botón de copiar</div>
+  </div>`;
+}
+async function enviarChat(){
+  const texto=(SES.chatDraft||'').trim();
+  if(!texto)return toast('Escribe tu pregunta');
+  if(SES.chatCargando)return;
+  if(!SES.chat)SES.chat=[];
+  SES.chat.push({role:'user',content:texto,ts:Date.now()});
+  SES.chatDraft='';SES.chatCargando=true;
+  render();window.scrollTo(0,document.body.scrollHeight);
+  try{
+    const r=await fetch('api/ia',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({sistema:baseParaChat(),
+        mensajes:SES.chat.map(m=>({role:m.role,content:m.content}))})});
+    const j=await r.json().catch(()=>null);
+    if(r.ok&&j&&j.texto){
+      SES.chat.push({role:'assistant',content:j.texto,ts:Date.now()});
+    }else if(j&&j.error==='sin_clave'){
+      SES.chat.push({role:'assistant',content:'El chat aún no está conectado: falta la clave de Anthropic en Vercel.\n\nPasos: 1) console.anthropic.com → crear API key y cargar crédito. 2) Vercel → proyecto → Settings → Environment Variables → ANTHROPIC_API_KEY. 3) Deployments → Redeploy.\n\nMientras tanto, la Base de registros y la descarga siguen disponibles.',ts:Date.now()});
+    }else{
+      SES.chat.push({role:'assistant',content:'No pude completar el análisis: '+((j&&j.detalle)||'error de conexión')+'. Vuelve a intentarlo; tu pregunta sigue abajo por si quieres reenviarla.',ts:Date.now()});
+      SES.chatDraft=texto;
+    }
+  }catch(e){
+    SES.chat.push({role:'assistant',content:'No hay conexión con el servidor ahora mismo. Revisa tu internet y reintenta; tu pregunta sigue abajo.',ts:Date.now()});
+    SES.chatDraft=texto;
+  }
+  SES.chatCargando=false;
+  render();window.scrollTo(0,document.body.scrollHeight);
+}
+
+function vAnConsultas(){
+  const cs=DB.consultas.filter(c=>!c.eliminada).sort((a,b)=>(a.respuesta?1:0)-(b.respuesta?1:0)||b.ts-a.ts);
+  if(SES.verConsulta){
+    const c=DB.consultas.find(x=>x.id===SES.verConsulta&&!x.eliminada);
+    if(c)return vAnResponder(c);
+    SES.verConsulta=null;
+  }
+  return `<div class="card"><h1>Consultas del emprendedor</h1>
+    <div class="sm muted">Responde con la base de registros como única fuente. Cada respuesta queda fechada y registrada.</div></div>
+  ${cs.length?cs.map(c=>`<div class="card">
+    <div class="top-r" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span class="chip ${c.respuesta?'verde':'ambar'}">${c.respuesta?'Respondida':'Pendiente'}</span>
+      ${c.respuesta&&c.respuesta.autoria?(c.respuesta.autoria==='ia'?'<span class="chip azul">✳ Claude sin editar</span>'
+        :(c.respuesta.autoria==='mixta'?'<span class="chip verde">✳ Claude + analista</span>'
+        :'<span class="chip">Redacción propia</span>')):''}
+      ${c.refAviso?'<span class="chip azul">Sobre un reporte</span>':(c.refRegistro?(()=>{const rr=DB.registros.find(x=>x.id===c.refRegistro);return rr?'<span class="chip '+(rr.tipo==='incidente'?'rojo':'azul')+'">Sobre '+(rr.tipo==='incidente'?'un incidente':'una actividad')+'</span>':''})():'')}
+      <span class="stamp mono xs muted" style="margin-left:auto">${fmt(c.ts)}</span></div>
+    <div class="sm" style="margin-top:6px;font-weight:600">${esc(c.pregunta)}</div>
+    ${c.respuesta?`<div class="xs muted" style="margin-top:4px">Respondida ${fmt(c.respuesta.ts)} por ${esc(c.respuesta.firma)}</div>`:''}
+    <div class="actions"><button class="btn ${c.respuesta?'':'primary'}" data-abrir="${c.id}">${c.respuesta?'Ver / responder de nuevo':'Responder'}</button></div>
+  </div>`).join(''):'<div class="empty">No hay consultas todavía.</div>'}`;
+}
+
+const FUENTES={actividad:'Actividad diaria',tareas:'Tareas fijas',proactivo:'Reporte proactivo'};
+const FUENTES_CONSULTA={actividad:'Actividad diaria',tareas:'Tareas fijas',proactivo:'General'};
+function refsSel(){if(!SES.avisoRefs)SES.avisoRefs=new Set();return SES.avisoRefs;}
+function fuenteSel(){return SES.avisoFuente||'proactivo';}
+
+function panelSustento(ctx){
+  const fu=fuenteSel(), hoy=hoyIso();
+  if(fu==='actividad'){
+    const f=SES.avisoFiltroArea||'';
+    const rs=lista().filter(r=>!f||r.area===f).sort((a,b)=>b.ts-a.ts).slice(0,25);
+    const sel=refsSel();
+    return `
+    <div class="fchips" style="margin-bottom:6px">
+      <button data-avf="" aria-pressed="${f===''}">Todas</button>
+      ${Object.keys(AREAS).map(a=>`<button data-avf="${a}" aria-pressed="${f===a}">${AREAS[a]}</button>`).join('')}
+    </div>
+    ${sel.size?`<div class="xs" style="margin-bottom:6px;color:var(--azul)"><b>${sel.size}</b> registro(s) seleccionados como sustento · <button class="btn quiet xs" id="av-limpiar-sel" style="padding:2px 6px">limpiar</button></div>`:''}
+    ${rs.length?`<div style="max-height:340px;overflow-y:auto;border:1px solid var(--line-2);border-radius:10px;padding:2px 12px">
+      ${rs.map(r=>`<label class="regsel">
+        <input type="checkbox" data-refsel="${r.id}" ${sel.has(r.id)?'checked':''}>
+        <span class="cuerpo">
+          <span class="meta">
+            ${r.tipo==='incidente'?`<span class="chip ${r.prioridad==='alta'?'rojo':(r.prioridad==='media'?'ambar':'')}">Incidente · ${r.prioridad}</span>`:'<span class="chip">Actividad</span>'}
+            <span class="chip azul">${AREAS[r.area]}</span>
+            <span class="xs mono muted" style="margin-left:auto">${fmt(r.ts)}</span>
+          </span>
+          ${esc((r.texto||r.transcript||'(solo adjuntos)').slice(0,110))}
+          <span class="xs muted" style="display:block">${esc(r.persona)}</span>
+        </span>
+      </label>`).join('')}
+    </div>`:'<div class="empty">No hay registros'+(f?' de '+AREAS[f]:'')+' en la base.</div>'}`;
+  }
+  if(fu==='tareas'){
+    return Object.keys(AREAS).map(a=>{
+      const av=avanceArea(a,hoy);
+      const color=av.total===0?'var(--muted)':(av.pct===100?'var(--verde)':(av.pct<50?'var(--rojo)':'var(--ambar)'));
+      return `<div style="padding:9px 0;border-bottom:1px solid var(--line-2)">
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <b class="sm" style="flex:1">${AREAS[a]}</b>
+          <span class="mono xs muted">${av.total?av.done+' de '+av.total:'sin tareas'}</span>
+          <b style="color:${color};font-family:var(--display)">${av.total?av.pct+'%':'—'}</b>
+        </div>
+        <div class="barra" style="margin-top:6px"><i style="width:${av.pct}%;background:${color}"></i></div>
+      </div>`}).join('');
+  }
+  return '';   // proactivo/general no muestra cuadro: las cifras se adjuntan solas
+}
+
+function sustentoActual(){
+  const fu=fuenteSel();
+  /* General = sin datos adjuntos: el analista responde con su criterio */
+  if(fu==='proactivo')return {fuente:'proactivo',nBase:DB.registros.length};
+  const st=statsBase(7);
+  const su={fuente:fu,nBase:DB.registros.length,total7:st.rs.length,incidentes7:st.incs.length,porArea:st.por};
+  if(fu==='tareas'){
+    const hoy=hoyIso();
+    su.tareas=Object.keys(AREAS).map(a=>({area:a,...avanceArea(a,hoy)}));
+    su.fecha=hoy;
+  }
+  if(fu==='actividad')su.refs=[...refsSel()];
+  return su;
+}
+
+function vAnResponder(c){
+  const fu=fuenteSel();
+  const refA=c.refAviso&&DB.avisos.find(a=>a.id===c.refAviso);
+  const refR=c.refRegistro&&DB.registros.find(x=>x.id===c.refRegistro);
+  return `<button class="btn quiet" id="an-volver">← Volver a consultas</button>
+  <div class="card"><div class="eyebrow">Consulta · ${fmt(c.ts)}</div>
+    <h2 style="margin-top:4px">${esc(c.pregunta)}</h2>
+    ${refA?`<div class="sustento" style="margin-top:10px">
+      <div class="eyebrow">Pregunta sobre tu reporte</div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:4px">
+        <span class="chip azul">${esc(refA.tipoAviso)}</span>
+        <span class="xs mono muted" style="margin-left:auto">${fmt(refA.ts)}</span>
+      </div>
+      <div class="sm">${esc(refA.texto.slice(0,220))}${refA.texto.length>220?'…':''}</div>
+    </div>`:''}
+    ${refR?`<div class="sustento" style="margin-top:10px">
+      <div class="eyebrow">Pregunta sobre este registro</div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:4px">
+        ${refR.tipo==='incidente'?`<span class="chip ${refR.prioridad==='alta'?'rojo':(refR.prioridad==='media'?'ambar':'')}">Incidente · ${refR.prioridad}${refR.estado?' · '+refR.estado:''}</span>`:'<span class="chip">Actividad</span>'}
+        <span class="chip azul">${AREAS[refR.area]}</span>
+        <span class="xs mono muted" style="margin-left:auto">${fmt(refR.ts)} · ${esc(refR.persona)}</span>
+      </div>
+      <div class="sm">${esc((refR.texto||refR.transcript||'(solo adjuntos)').slice(0,220))}</div>
+      ${(refR.actualizaciones&&refR.actualizaciones.length)?`<div class="xs muted" style="margin-top:4px">↻ ${refR.actualizaciones.length} actualización(es); la última: "${esc(refR.actualizaciones[refR.actualizaciones.length-1].texto.slice(0,100))}"</div>`:''}
+    </div>`:''}</div>
+
+  <div class="card">
+    <div class="paso"><span class="n">1</span><b>Datos para sustentar la respuesta</b></div>
+    <div class="seg">
+      ${Object.entries(FUENTES_CONSULTA).map(([k,v])=>`<button data-avfuente="${k}" aria-pressed="${fu===k}">${v}</button>`).join('')}
+    </div>
+    <div class="xs muted" style="margin:7px 0 10px">${
+      fu==='actividad'?'Marca los registros concretos que respaldan tu respuesta; el emprendedor podrá verlos citados.':
+      fu==='tareas'?'Se adjunta el cumplimiento de las tareas fijas (POE) de hoy por área.':
+      'Respuesta a tu criterio, con todo tu conocimiento del negocio. No se adjunta ningún dato de la base.'}</div>
+    ${panelSustento('consulta')}
+  </div>
+
+  <div class="card">
+    <div class="paso"><span class="n">2</span><b>Tu respuesta</b></div>
+    <label class="f"><span>Respuesta <i class="req">*</i></span>
+      <textarea id="an-texto" rows="8" placeholder="Análisis, tendencias y recomendaciones sustentadas en los datos seleccionados">${esc(SES.anDraft||'')}</textarea></label>
+    ${(SES.anFotos&&SES.anFotos.length)?`<div class="fotos" style="margin:4px 0 8px">${SES.anFotos.map((f,ix)=>`
+      <span style="position:relative;display:inline-block">
+        <img src="${f}" alt="Adjunto ${ix+1}" style="width:74px;height:74px;object-fit:cover;border-radius:10px;border:1px solid var(--line)">
+        <button class="btn quiet xs" data-anfquitar="${ix}" style="position:absolute;top:-6px;right:-6px;background:var(--surface);border:1px solid var(--line);border-radius:50%;width:22px;height:22px;padding:0;line-height:1">✕</button>
+      </span>`).join('')}</div>`:''}
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:2px 0 6px">
+      ${(SES.anFotos||[]).length<3?`<label class="btn xs" style="cursor:pointer">📷 Adjuntar imagen
+        <input type="file" accept="image/*" id="an-foto" class="hide"></label>`:'<span class="xs muted">Máximo 3 imágenes.</span>'}
+      <button class="btn xs" id="an-ia" ${SES.iaCargandoResp?'disabled':''} style="display:inline-flex;align-items:center;gap:6px">
+        <span class="av-c" style="width:18px;height:18px;font-size:10px">✳</span>${SES.iaCargandoResp?'Claude está redactando…':'Redactar borrador con Claude'}</button>
+      <span class="xs muted">Claude lee la base y propone; tú editas y decides. Queda registrado si la respuesta fue tuya, de Claude, o mixta.</span>
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="an-publicar" data-c="${c.id}" style="flex:1;min-width:200px">Publicar respuesta</button>
+    </div></div>`;
+}
+function vAnAviso(){
+  const fu=fuenteSel();
+  const enviados=DB.avisos.filter(a=>a.origen==='analista').sort((a,b)=>b.ts-a.ts);
+  return `<div class="card">
+    <h1>Enviar reporte al emprendedor</h1>
+    <div class="sm muted">Elige de dónde sale el análisis, marca los datos que lo sustentan y redacta. El emprendedor recibe el reporte con esos datos citados.</div>
+  </div>
+
+  <div class="card">
+    <div class="paso"><span class="n">1</span><b>Fuente del reporte</b></div>
+    <div class="seg">
+      ${Object.entries(FUENTES).map(([k,v])=>`<button data-avfuente="${k}" aria-pressed="${fu===k}">${v}</button>`).join('')}
+    </div>
+    <div class="xs muted" style="margin-top:7px">${
+      fu==='actividad'?'Sustentado en registros concretos de los sensores: incidentes y actividades.':
+      fu==='tareas'?'Sustentado en el cumplimiento de las tareas fijas (POE) por área.':
+      'Análisis general por iniciativa propia. No requiere seleccionar datos: las cifras del periodo se adjuntan solas al enviar.'}</div>
+  </div>
+
+  ${fu!=='proactivo'?`<div class="card">
+    <div class="paso"><span class="n">2</span><b>Datos de sustento</b></div>
+    ${panelSustento()}
+  </div>`:''}
+
+  <div class="card">
+    <div class="paso"><span class="n">${fu==='proactivo'?2:3}</span><b>Redacción del reporte</b></div>
+    <label class="f"><span>Tipo de reporte <i class="req">*</i></span>
+      <select id="av-tipo">${TIPOS_AVISO.map(t=>`<option>${t}</option>`).join('')}<option value="__otro">Otro (título propio)</option></select></label>
+    <label class="f hide" id="av-tipo-otro-wrap"><span>Título del reporte <i class="req">*</i></span>
+      <input id="av-tipo-otro" maxlength="60" placeholder="Ej.: Observación de la semana"></label>
+    <label class="f"><span>Contenido <i class="req">*</i></span>
+      <textarea id="av-texto" rows="7" placeholder="Qué detectaste en los datos seleccionados y qué recomiendas hacer"></textarea></label>
+    ${(SES.avFotos&&SES.avFotos.length)?`<div class="fotos" style="margin:4px 0 8px">${SES.avFotos.map((f,ix)=>`
+      <span style="position:relative;display:inline-block">
+        <img src="${f}" alt="Adjunto ${ix+1}" style="width:74px;height:74px;object-fit:cover;border-radius:10px;border:1px solid var(--line)">
+        <button class="btn quiet xs" data-avfquitar="${ix}" style="position:absolute;top:-6px;right:-6px;background:var(--surface);border:1px solid var(--line);border-radius:50%;width:22px;height:22px;padding:0;line-height:1">✕</button>
+      </span>`).join('')}</div>`:''}
+    <div style="margin:2px 0 8px">
+      ${(SES.avFotos||[]).length<3?`<label class="btn xs" style="cursor:pointer">📷 Adjuntar imagen
+        <input type="file" accept="image/*" id="av-foto" class="hide"></label>`:'<span class="xs muted">Máximo 3 imágenes.</span>'}
+    </div>
+    <div class="actions">
+      <button class="btn primary" id="av-enviar" style="flex:1;min-width:200px">Enviar al emprendedor</button>
+    </div>
+  </div>
+
+  <div class="sec"><span class="eyebrow">Reportes que enviaste</span></div>
+  ${enviados.length?enviados.map(a=>`<div class="card">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span class="chip azul">${esc(a.tipoAviso)}</span>
+      ${a.fuente?`<span class="chip">${FUENTES[a.fuente]||a.fuente}</span>`:''}
+      ${a.leido?'<span class="chip verde">Leído</span>':'<span class="chip ambar">Sin leer</span>'}
+      <span class="stamp mono xs muted" style="margin-left:auto">${fmt(a.ts)}</span></div>
+    <div class="sm" style="margin-top:6px;white-space:pre-wrap">${esc(a.texto.slice(0,220))}${a.texto.length>220?'…':''}</div>
+    ${(a.refs&&a.refs.length)?`<div class="xs muted" style="margin-top:4px">Sustentado en ${a.refs.length} registro(s).</div>`:''}
+  </div>`).join(''):'<div class="empty">Aún no envías reportes.</div>'}`;
+}
+
+/* =====================================================================
+   EXPORTACIÓN (CSV / JSON / resumen), REINICIO y DETALLE DE AVISO
+   ===================================================================== */
+const COLUMNAS=[
+  ['fecha','Fecha',r=>iso(r.ts)],
+  ['hora','Hora',r=>hhmm(r.ts)],
+  ['dia_semana','Día',r=>['domingo','lunes','martes','miércoles','jueves','viernes','sábado'][new Date(r.ts).getDay()]],
+  ['franja','Franja',r=>{const h=new Date(r.ts).getHours();return h<12?'mañana':(h<18?'tarde':'noche')}],
+  ['area','Área',r=>AREAS[r.area]||r.area],
+  ['tipo','Tipo',r=>r.tipo==='incidente'?'Incidente':'Actividad'],
+  ['prioridad','Prioridad',r=>r.prioridad||''],
+  ['estado','Estado',r=>r.estado||''],
+  ['persona','Reportado por',r=>r.persona||''],
+  ['descripcion','Descripción',r=>r.texto||''],
+  ['transcripcion','Transcripción del audio',r=>r.transcript||''],
+  ['fotos','N° de fotos',r=>String(r.nFotos||0)],
+  ['audio','Tiene audio',r=>r.hasAudio?'sí':'no'],
+  ['seguimiento','Seguimiento del incidente',r=>(r.actualizaciones||[]).map(x=>'['+iso(x.ts)+' '+hhmm(x.ts)+'] '+x.texto).join(' | ')],
+  ['recomendaciones','Recomendaciones del analista',r=>avisosDe(r.id).map(a=>a.tipoAviso+': '+a.texto).join(' | ')],
+  ['id','ID',r=>r.id],
+  ['fecha_hora_iso','Marca temporal ISO',r=>new Date(r.ts).toISOString()]
+];
+function csvDe(rs,sep){
+  const cel=v=>{const t=String(v==null?'':v).replace(/\r?\n/g,' ').replace(/"/g,'""');
+    return /["\n]|[,;\t]/.test(t)?'"'+t+'"':t;};
+  const lineas=[COLUMNAS.map(c=>cel(c[1])).join(sep)];
+  rs.forEach(r=>lineas.push(COLUMNAS.map(c=>cel(c[2](r))).join(sep)));
+  return '\ufeff'+lineas.join('\r\n');
+}
+function csvAvisos(avs,sep){
+  const cel=v=>{const t=String(v==null?'':v).replace(/\r?\n/g,' ').replace(/"/g,'""');
+    return /["\n]|[,;\t]/.test(t)?'"'+t+'"':t;};
+  const cols=[
+    ['Fecha',a=>iso(a.ts)],['Hora',a=>hhmm(a.ts)],
+    ['Origen',a=>a.origen==='analista'?'Analista':'Sistema'],
+    ['Tipo de reporte',a=>a.tipoAviso||''],
+    ['Contenido',a=>a.texto||''],
+    ['Firma',a=>a.firma||''],
+    ['Fuente del análisis',a=>({actividad:'Actividad diaria',tareas:'Tareas fijas',proactivo:'General'})[a.fuente]||''],
+    ['Leído por el emprendedor',a=>a.leido?'sí':'no'],
+    ['Imágenes adjuntas',a=>a.nFotos||0],
+    ['Vinculado a incidente',a=>{const r=a.refIncidente&&DB.registros.find(x=>x.id===a.refIncidente);return r?textoVivo(r).slice(0,120):''}]
+  ];
+  const lineas=[cols.map(c=>cel(c[0])).join(sep)];
+  avs.forEach(a=>lineas.push(cols.map(c=>cel(c[1](a))).join(sep)));
+  return '\ufeff'+lineas.join('\r\n');
+}
+function resumenTexto(rs){
+  const cuenta=(fn)=>{const m={};rs.forEach(r=>{const k=fn(r);if(k)m[k]=(m[k]||0)+1});
+    return Object.entries(m).sort((a,b)=>b[1]-a[1])};
+  const incs=rs.filter(r=>r.tipo==='incidente');
+  const stop=new Set('de la el en los las que una uno con por para del sin muy hay fue este esta hoy ayer mas más pero como cuando donde tiene hacer se un al lo su ya no si es era son están esta estaba'.split(' '));
+  const freq={};
+  rs.forEach(r=>String((r.texto||'')+' '+(r.transcript||'')).toLowerCase().replace(/[^a-záéíóúñü\s]/g,' ')
+    .split(/\s+/).filter(w=>w.length>3&&!stop.has(w)).forEach(w=>freq[w]=(freq[w]||0)+1));
+  const top=Object.entries(freq).filter(e=>e[1]>1).sort((a,b)=>b[1]-a[1]).slice(0,15);
+  const dias=new Set(rs.map(r=>iso(r.ts))).size;
+  let t='RESUMEN DE REGISTROS — FUSE OPS\n';
+  t+='Periodo cubierto: '+(rs.length?iso(rs[0].ts)+' a '+iso(rs[rs.length-1].ts):'sin registros')+'\n';
+  t+='Generado: '+new Date().toLocaleString('es-PE')+'\n\n';
+  t+='TOTALES\n';
+  t+='Registros: '+rs.length+' ('+incs.length+' incidentes, '+(rs.length-incs.length)+' actividades)\n';
+  t+='Días con reportes: '+dias+(dias?' · promedio '+(rs.length/dias).toFixed(1)+' registros por día':'')+'\n\n';
+  t+='POR ÁREA\n'+(cuenta(r=>AREAS[r.area]).map(([k,v])=>'  '+k+': '+v+' ('+Math.round(v/rs.length*100)+'%)').join('\n')||'  sin datos')+'\n\n';
+  t+='INCIDENTES POR PRIORIDAD\n'+(cuenta(r=>r.tipo==='incidente'?r.prioridad:null).map(([k,v])=>'  '+k+': '+v).join('\n')||'  sin incidentes')+'\n\n';
+  t+='INCIDENTES POR ESTADO\n'+(cuenta(r=>r.tipo==='incidente'?r.estado:null).map(([k,v])=>'  '+k+': '+v).join('\n')||'  sin incidentes')+'\n\n';
+  t+='POR FRANJA HORARIA\n'+(cuenta(r=>{const h=new Date(r.ts).getHours();return h<12?'mañana':(h<18?'tarde':'noche')}).map(([k,v])=>'  '+k+': '+v).join('\n')||'  sin datos')+'\n\n';
+  t+='POR DÍA DE LA SEMANA\n'+(cuenta(r=>['domingo','lunes','martes','miércoles','jueves','viernes','sábado'][new Date(r.ts).getDay()]).map(([k,v])=>'  '+k+': '+v).join('\n')||'  sin datos')+'\n\n';
+  t+='QUIÉN REPORTA\n'+(cuenta(r=>r.persona).map(([k,v])=>'  '+k+': '+v).join('\n')||'  sin datos')+'\n\n';
+  t+='TAREAS FIJAS DE HOY\n'+Object.keys(AREAS).map(a=>{const av=avanceArea(a,hoyIso());
+    return '  '+AREAS[a]+': '+(av.total?av.done+' de '+av.total+' ('+av.pct+'%)':'sin tareas definidas')}).join('\n')+'\n\n';
+  const hechas=DB.checks.filter(c=>c.hecho);
+  if(hechas.length){
+    const diasTF=new Set(hechas.map(c=>c.fecha)).size;
+    t+='CUMPLIMIENTO DE TAREAS FIJAS (historial)\n';
+    t+='  Marcas registradas: '+hechas.length+' en '+diasTF+' día(s)\n';
+    Object.keys(AREAS).forEach(a=>{const n=hechas.filter(c=>c.area===a).length;if(n)t+='  '+AREAS[a]+': '+n+' tarea(s) completadas\n';});
+    const porPers={};hechas.forEach(c=>{const k=c.persona||'sin asignar';porPers[k]=(porPers[k]||0)+1});
+    t+='  Por persona: '+Object.entries(porPers).sort((x,y)=>y[1]-x[1]).map(([k,v])=>k+' ('+v+')').join(', ')+'\n\n';
+  }
+  t+='PALABRAS QUE SE REPITEN\n'+(top.map(([k,v])=>'  '+k+': '+v).join('\n')||'  ninguna se repite todavía')+'\n\n';
+  t+='DETALLE CRONOLÓGICO\n';
+  rs.forEach(r=>{t+=fmt(r.ts)+' · '+AREAS[r.area]+' · '+r.persona+' · '+(r.tipo==='incidente'?'INCIDENTE ('+r.prioridad+', '+r.estado+')':'actividad')+
+    ': '+(r.texto||'')+(r.transcript?' [audio: '+r.transcript+']':'')+'\n'});
+  return t;
+}
+function csvTareas(sep){
+  const cel=v=>{const t=String(v==null?'':v).replace(/\r?\n/g,' ').replace(/"/g,'""');
+    return /["\n]|[,;\t]/.test(t)?'"'+t+'"':t;};
+  const cab=['Fecha','Área','Tarea','Estado','Hecha por','Hora','Marcada desde el perfil de','ID tarea'];
+  const filas=[cab.map(cel).join(sep)];
+  /* una fila por tarea y día con actividad: hechas y también las desmarcadas quedan como pendientes */
+  const marcas=DB.checks.slice().sort((a,b)=>(a.fecha+'').localeCompare(b.fecha)||(a.ts||0)-(b.ts||0));
+  marcas.forEach(c=>{
+    const t=DB.tareas.find(x=>x.id===c.tareaId);
+    filas.push([c.fecha,AREAS[c.area]||c.area,(t&&t.texto)||'(tarea eliminada)',
+      c.hecho?'hecha':'pendiente',c.hecho?(c.persona||'sin asignar'):'',
+      c.hecho?hhmm(c.ts):'',c.marcadaPor||'',c.tareaId].map(cel).join(sep));
+  });
+  return '\ufeff'+filas.join('\r\n');
+}
+function descargar(nombre,texto,mime){
+  const blob=new Blob([texto],{type:(mime||'text/plain')+';charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=nombre;
+  document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+}
+function selloArchivo(){
+  const d=new Date();
+  return iso(d.getTime())+'_'+pad(d.getHours())+pad(d.getMinutes());
+}
+function filtrarDescarga(F){
+  return DB.registros.filter(r=>{
+    if(F.fecha&&iso(r.ts)!==F.fecha)return false;
+    const h=hhmm(r.ts);
+    if(F.hini&&h<F.hini)return false;
+    if(F.hfin&&h>F.hfin)return false;
+    if(F.sensor&&r.persona!==F.sensor)return false;
+    return true;
+  }).sort((a,b)=>a.ts-b.ts);
+}
+function filtrarAvisos(F){
+  return DB.avisos.filter(a=>{
+    if(F.fecha&&iso(a.ts)!==F.fecha)return false;
+    const h=hhmm(a.ts);
+    if(F.hini&&h<F.hini)return false;
+    if(F.hfin&&h>F.hfin)return false;
+    return true;
+  }).sort((x,y)=>x.ts-y.ts);
+}
+function nombreDescarga(F,ext){
+  const limpio=t=>String(t||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    .replace(/[^a-z0-9]+/gi,'-').replace(/^-+|-+$/g,'').toLowerCase()||'todos';
+  const hora=t=>t?t.replace(':','')+'h':'';
+  const rango=(F.hini||F.hfin)?('_'+(hora(F.hini)||'0000h')+'-'+(hora(F.hfin)||'2359h')):'';
+  return 'fuse-ops_'+(F.sensor?limpio(F.sensor):'todos')+'_'+(F.fecha||iso(Date.now()))+rango+'.'+ext;
+}
+function dialogoDescarga(){
+  if(!DB.registros.length&&!DB.avisos.length)return toast('La base está vacía: no hay nada que descargar');
+  const F={fecha:'',hini:'',hfin:'',sensor:''};
+  const sensores=[...new Set(DB.registros.map(r=>r.persona).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  $('#dlg-in').innerHTML=`
+    <div class="eyebrow">Descargar datos</div>
+    <h2 style="margin:4px 0 8px">Elige qué llevarte</h2>
+    <div class="sm muted" style="margin-bottom:12px">Deja todo vacío para descargar la data completa, o acótala por horas del día y por sensor — pensado para cerrar una sesión de campo.</div>
+
+    <label class="f" style="margin:0 0 11px"><span>Día (opcional; vacío = todos)</span><input type="date" id="dd-fecha"></label>
+    <div class="grid-dd">
+      <label class="f" style="margin:0"><span>Desde la hora</span><input type="time" id="dd-hini"></label>
+      <label class="f" style="margin:0"><span>Hasta la hora</span><input type="time" id="dd-hfin"></label>
+    </div>
+    <label class="f" style="margin-top:11px"><span>Sensor (quién reportó)</span>
+      <select id="dd-sensor"><option value="">Todos los sensores</option>
+        ${sensores.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('')}</select></label>
+
+    <div class="sustento" style="margin-top:4px">
+      <div class="kv"><span>Registros que se descargarán</span><b id="dd-count">${DB.registros.length}</b></div>
+      <div class="kv"><span>Incidentes incluidos</span><b id="dd-inc">${DB.registros.filter(r=>r.tipo==='incidente').length}</b></div>
+      <div class="kv"><span>Reportes del analista/sistema</span><b id="dd-avi">${DB.avisos.length}</b></div>
+    </div>
+    <div class="xs muted hide" id="dd-vacio" style="margin-top:6px;color:var(--rojo)">Ningún registro coincide. Revisa que "Desde" sea antes que "Hasta", o afloja los filtros.</div>
+
+    <div class="actions" style="margin-top:14px">
+      <button class="btn primary" id="dd-csv" style="flex:1;min-width:150px">Registros CSV</button>
+      <button class="btn" id="dd-avcsv" style="flex:1;min-width:150px">Reportes CSV</button>
+      <button class="btn" id="dd-json" style="flex:1;min-width:150px">Todo en JSON</button>
+    </div>
+    <div class="xs muted" style="margin-top:8px">Registros CSV: lo reportado por los sensores, una fila por registro. Reportes CSV: los reportes del analista y las alertas del sistema (filtran por día y hora; el filtro de sensor no les aplica). El JSON lo incluye todo, con consultas y respuestas.</div>
+    <div class="actions"><button class="btn quiet" id="dd-x" style="flex:1">Cerrar</button></div>`;
+  abrirDlg();
+  const refrescar=()=>{
+    F.fecha=$('#dd-fecha').value||'';F.hini=$('#dd-hini').value||'';F.hfin=$('#dd-hfin').value||'';F.sensor=$('#dd-sensor').value||'';
+    const rs=filtrarDescarga(F);
+    $('#dd-count').textContent=rs.length;
+    $('#dd-inc').textContent=rs.filter(r=>r.tipo==='incidente').length;
+    const avs=filtrarAvisos(F);
+    $('#dd-avi').textContent=avs.length;
+    $('#dd-vacio').classList.toggle('hide',rs.length>0||avs.length>0);
+    $('#dd-csv').disabled=!rs.length;
+    $('#dd-avcsv').disabled=!avs.length;
+    $('#dd-json').disabled=!rs.length&&!avs.length;
+    return rs;
+  };
+  ['dd-fecha','dd-hini','dd-hfin','dd-sensor'].forEach(id=>{$('#'+id).onchange=refrescar;$('#'+id).oninput=refrescar;});
+  $('#dd-x').onclick=()=>$('#dlg').close();
+  $('#dd-avcsv').onclick=()=>{
+    refrescar();
+    const avs=filtrarAvisos(F);if(!avs.length)return;
+    try{
+      descargar(nombreDescarga(F,'csv').replace('fuse-ops_','fuse-ops_reportes_'),csvAvisos(avs,';'),'text/csv');
+      toast(avs.length+' reporte(s) descargados en CSV');
+    }catch(e){toast('No se pudo generar el archivo: '+String(e.message||e));}
+  };
+  $('#dd-csv').onclick=()=>{
+    const rs=refrescar();if(!rs.length)return;
+    try{
+      descargar(nombreDescarga(F,'csv'),csvDe(rs,';'),'text/csv');
+      toast(rs.length+' registro(s) descargados en CSV');
+    }catch(e){toast('No se pudo generar el archivo: '+String(e.message||e));}
+  };
+  $('#dd-json').onclick=()=>{
+    const rs=refrescar();if(!rs.length)return;
+    try{
+      const completo=!F.fecha&&!F.hini&&!F.hfin&&!F.sensor;
+      descargar(nombreDescarga(F,'json'),JSON.stringify({
+        exportado:new Date().toISOString(),
+        filtros:{dia:F.fecha||null,desdeHora:F.hini||null,hastaHora:F.hfin||null,sensor:F.sensor||null},
+        totalRegistros:rs.length,
+        registros:rs,
+        avisos:DB.avisos,consultas:DB.consultas,
+        tareas:DB.tareas,personas:DB.personas,
+        checks:completo?DB.checks:DB.checks.filter(c=>!F.fecha||c.fecha===F.fecha)
+      },null,2),'application/json');
+      toast('Datos crudos descargados'+(completo?'':' (filtrados)'));
+    }catch(e){toast('No se pudo generar el archivo: '+String(e.message||e));}
+  };
+}
+function mediaDe(idMedia,meta){
+  return mediaHtml({id:idMedia,nFotos:meta.nFotos||0,hasAudio:false,mediaPerdida:meta.mediaPerdida});
+}
+function pedirMedia(idMedia,meta){
+  if(!meta||!meta.nFotos||MEDIA.has(idMedia))return;
+  MEDIA.set(idMedia,'cargando');
+  sGet(K_MEDIA+idMedia).then(m=>{MEDIA.set(idMedia,m||'error');const el=$('#dlg-media-x');if(el)el.innerHTML=mediaDe(idMedia,meta);});
+}
+function dialogoRespuesta(cid){
+  const c=DB.consultas.find(x=>x.id===cid);if(!c||!c.respuesta)return;
+  pedirMedia('resp_'+c.id,c.respuesta);
+  const su=c.respuesta.sustento||{};
+  const refs=(c.respuesta.refs||[]).map(rid=>DB.registros.find(r=>r.id===rid)).filter(Boolean);
+  $('#dlg-in').innerHTML=`
+    <div class="eyebrow">Datos usados en la respuesta</div>
+    <h2 style="margin:4px 0 10px">${esc(c.pregunta)}</h2>
+    <div class="xs muted" style="margin-bottom:10px">Respondida ${fmt(c.respuesta.ts)}</div>
+    <div class="sustento" style="margin-top:0">
+      <div class="eyebrow">Sustento · ${FUENTES_CONSULTA[su.fuente]||'General'}</div>
+      ${su.fuente==='tareas'&&su.tareas?su.tareas.map(t=>`<div class="kv"><span>${AREAS[t.area]||t.area}</span><b>${t.total?t.done+' de '+t.total+' ('+t.pct+'%)':'sin tareas'}</b></div>`).join('')
+      :su.fuente==='actividad'?`<div class="kv"><span>Registros citados</span><b>${refs.length}</b></div>
+        <div class="kv"><span>Base al momento de responder</span><b>${su.nBase??c.respuesta.nBase??'—'} registro(s)</b></div>`
+      :`<div class="kv"><span>Registros analizados (7 días)</span><b>${su.total7??'—'}</b></div>
+        <div class="kv"><span>Incidentes en el periodo</span><b>${su.incidentes7??'—'}</b></div>
+        ${su.porArea?Object.keys(AREAS).map(k=>`<div class="kv"><span>${AREAS[k]}</span><b>${su.porArea[k]||0}</b></div>`).join(''):''}`}
+    </div>
+    ${refs.length?`<div class="eyebrow" style="margin:14px 0 6px">Registros citados</div>
+      ${refs.map(r=>`<div style="border:1px solid var(--line-2);border-radius:10px;padding:9px 11px;margin-bottom:7px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          ${r.tipo==='incidente'?`<span class="chip ${r.prioridad==='alta'?'rojo':(r.prioridad==='media'?'ambar':'')}">Incidente · ${r.prioridad}</span>`:'<span class="chip">Actividad</span>'}
+          <span class="chip azul">${AREAS[r.area]}</span>
+          <span class="xs mono muted" style="margin-left:auto">${fmt(r.ts)}</span>
+        </div>
+        <div class="sm" style="margin-top:5px">${esc(r.texto||r.transcript||'(solo adjuntos)')}</div>
+      </div>`).join('')}`:''}
+    <div id="dlg-media-x">${mediaDe('resp_'+c.id,c.respuesta)}</div>
+    <div class="actions"><button class="btn quiet" id="dlg-x3">Cerrar</button></div>`;
+  $('#dlg').showModal();
+  $('#dlg-x3').onclick=()=>$('#dlg').close();
+}
+function dialogoAgregarTarea(st){
+  st=st||{tipo:'dia',area:(Object.keys(AREAS)[0]),resp:'',texto:''};
+  const gente=personasDe(st.area);
+  if(st.resp&&!gente.some(g=>g.nombre===st.resp))st.resp='';
+  const leer=()=>({tipo:st.tipo,fija:st.fija,
+    area:(!st.fija&&$('#at-area'))?$('#at-area').value:st.area,
+    resp:$('#at-resp')?$('#at-resp').value:st.resp,
+    texto:$('#at-texto')?$('#at-texto').value:st.texto,
+    cat:$('#at-cat')?$('#at-cat').value:(st.cat||''),
+    catNueva:$('#at-catnueva')?$('#at-catnueva').value:(st.catNueva||'')});
+  $('#dlg-in').innerHTML=`
+    <div class="eyebrow">Agregar tarea</div>
+    <div class="segmentos" style="margin:10px 0 4px" role="group" aria-label="Tipo de tarea">
+      <button data-attipo="dia" aria-pressed="${st.tipo==='dia'}">Tarea del día</button>
+      <button data-attipo="fija" aria-pressed="${st.tipo==='fija'}">Tarea fija (POE)</button>
+    </div>
+    <div class="xs muted" style="margin-bottom:10px">${st.tipo==='dia'
+      ?'Vale solo por hoy y no altera el POE. El sensor la verá resaltada en su checklist.'
+      :'Entra al POE del área, al final de la lista, y se repite todos los días.'}</div>
+    <div class="grid-dd">
+      ${st.fija
+        ?`<label class="f" style="margin:0"><span>Área</span>
+           <div class="sm" style="padding:11px 2px 0"><span class="chip azul">${AREAS[st.area]}</span></div></label>`
+        :`<label class="f" style="margin:0"><span>Área</span>
+        <select id="at-area">${Object.keys(AREAS).map(a=>`<option value="${a}" ${a===st.area?'selected':''}>${AREAS[a]}</option>`).join('')}</select></label>`}
+      <label class="f" style="margin:0"><span>Delegar a (opcional)</span>
+        <select id="at-resp">
+          <option value="">Sin responsable</option>
+          ${gente.map(pn=>`<option value="${esc(pn.nombre)}" ${st.resp===pn.nombre?'selected':''}>${esc(pn.nombre)}</option>`).join('')}
+        </select></label>
+    </div>
+    ${gente.length?'':`<div class="xs muted" style="margin-top:4px">Esta área aún no tiene personas registradas; el sensor puede registrarlas desde su checklist.</div>`}
+    <label class="f" style="margin-top:10px"><span>Agrupación (opcional)${st.cat==='__nueva'?` · <button type="button" id="at-catvolver" style="border:0;background:none;padding:0;font:inherit;font-size:11px;color:var(--azul);cursor:pointer;text-decoration:underline">elegir de la lista</button>`:''}</span>
+      ${st.cat==='__nueva'
+        ?`<input id="at-catnueva" maxlength="40" placeholder="Escribe la nueva agrupación y queda guardada" value="${esc(st.catNueva||'')}" autofocus>`
+        :`<select id="at-cat">
+        <option value="">Sin agrupación</option>
+        ${categorias().map(c=>`<option value="${esc(c)}" ${st.cat===c?'selected':''}>${esc(c)}</option>`).join('')}
+        <option value="__nueva">+ Nueva agrupación…</option>
+      </select>`}</label>
+    <label class="f" style="margin-top:10px"><span>La tarea <i class="req">*</i></span>
+      <input id="at-texto" maxlength="140" placeholder="${st.tipo==='dia'?'Ej.: Preparar el pedido especial de las 3pm':'Ej.: Revisar stock de bolsas al abrir'}" value="${esc(st.texto||'')}"></label>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn primary" id="at-ok" style="flex:1;min-width:150px">${st.tipo==='dia'?'Agregar para hoy':'Agregar al POE'}</button>
+      <button class="btn quiet" id="at-x">Cancelar</button>
+    </div>`;
+  if(!$('#dlg').open)abrirDlg();
+  $('#dlg-in').querySelectorAll('[data-attipo]').forEach(b=>b.onclick=()=>{
+    const v=leer();v.tipo=b.dataset.attipo;dialogoAgregarTarea(v);
+  });
+  if($('#at-area'))$('#at-area').onchange=()=>{const v=leer();v.resp='';dialogoAgregarTarea(v);};
+  if($('#at-cat'))$('#at-cat').onchange=()=>{dialogoAgregarTarea(leer());};
+  if($('#at-catvolver'))$('#at-catvolver').onclick=()=>{const v=leer();v.cat='';v.catNueva='';dialogoAgregarTarea(v);};
+  $('#at-x').onclick=()=>$('#dlg').close();
+  $('#at-ok').onclick=async()=>{
+    const v=leer();
+    const texto=(v.texto||'').trim();
+    if(!texto)return toast('Escribe la tarea');
+    let cat=v.cat==='__nueva'?(v.catNueva||'').trim():(v.cat||'');
+    if(v.cat==='__nueva'&&!cat)return toast('Escribe el nombre de la agrupación');
+    const t=v.tipo==='dia'
+      ?{id:uid(),area:v.area,texto,tipoTarea:'dia',fecha:hoyIso(),resp:v.resp||'',ts:Date.now(),...(cat?{categoria:cat}:{})}
+      :{id:uid(),area:v.area,texto,resp:v.resp||'',ts:Date.now(),...(cat?{categoria:cat}:{}),
+         orden:Math.max(0,...tareasDe(v.area).map(x=>x.orden||0))+1};
+    $('#dlg').close();
+    DB.tareas.push(t);
+    SES.areaDetalle=v.area;   /* la tarea recién agregada, visible en su listado */
+    render();
+    SES.guardando=true;
+    const ok=await guardarDB();
+    SES.guardando=false;
+    if(!ok){DB.tareas=DB.tareas.filter(x=>x.id!==t.id);toast('No se pudo guardar la tarea. Reintenta.');return render();}
+    toast(v.tipo==='dia'?'Tarea del día agregada · el sensor ya la ve':'Tarea agregada al POE del área');
+  };
+}
+function dialogoEliminarPregunta(cid){
+  const c=DB.consultas.find(x=>x.id===cid&&!x.eliminada);if(!c)return;
+  $('#dlg-in').innerHTML=`
+    <div class="eyebrow">Eliminar pregunta</div>
+    <div class="sustento" style="margin-top:8px">
+      <div class="xs mono muted" style="margin-bottom:4px">${fmt(c.ts)}</div>
+      <div class="sm">${esc(c.pregunta.slice(0,160))}</div>
+    </div>
+    <div class="sm muted" style="margin-top:10px">Se quitará de tu lista y de la bandeja del analista.${c.respuesta?' <b>Incluida la respuesta que ya te dieron.</b>':''}</div>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn primary" id="qd-ok" style="flex:1;min-width:150px;background:var(--rojo);border-color:var(--rojo)">Eliminar</button>
+      <button class="btn quiet" id="qd-x">Cancelar</button>
+    </div>`;
+  abrirDlg();
+  $('#qd-x').onclick=()=>$('#dlg').close();
+  $('#qd-ok').onclick=async()=>{
+    $('#dlg').close();
+    const vivo=DB.consultas.find(x=>x.id===cid);if(!vivo)return render();
+    vivo.eliminada=true;render();
+    toast('Pregunta eliminada');
+    SES.guardando=true;
+    const ok=await guardarDB();
+    SES.guardando=false;
+    if(!ok){vivo.eliminada=false;toast('No se pudo eliminar. Reintenta.');render();}
+  };
+}
+function dialogoRangoFechas(){
+  const R=SES.empRango||{};
+  $('#dlg-in').innerHTML=`
+    <div class="eyebrow">Periodo de la vista</div>
+    <h2 style="margin:4px 0 8px">Elegir fechas</h2>
+    <div class="sm muted" style="margin-bottom:12px">La actividad diaria mostrará solo lo registrado entre estas fechas (ambas incluidas).</div>
+    <div class="grid-dd">
+      <label class="f" style="margin:0"><span>Desde</span><input type="date" id="rg-ini" value="${esc(R.ini||'')}"></label>
+      <label class="f" style="margin:0"><span>Hasta</span><input type="date" id="rg-fin" value="${esc(R.fin||'')}"></label>
+    </div>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn primary" id="rg-ok" style="flex:1;min-width:150px">Aplicar</button>
+      <button class="btn quiet" id="rg-x">Cancelar</button>
+    </div>`;
+  abrirDlg();
+  $('#rg-x').onclick=()=>$('#dlg').close();
+  $('#rg-ok').onclick=()=>{
+    let ini=$('#rg-ini').value||'',fin=$('#rg-fin').value||'';
+    if(!ini&&!fin)return toast('Elige al menos una fecha');
+    if(ini&&fin&&ini>fin){const t=ini;ini=fin;fin=t;}   /* si vienen invertidas, se ordenan solas */
+    SES.empRango={ini,fin};
+    SES.empPeriodo='rango';SES.actLim=10;SES.incTodos=false;
+    $('#dlg').close();
+    toast('Mostrando del '+(ini?fmtDia(ini):'inicio')+' al '+(fin?fmtDia(fin):'hoy'));
+    render();
+  };
+}
+function dialogoEditarTarea(tid){
+  const t=DB.tareas.find(x=>x.id===tid&&!x.eliminada);if(!t)return;
+  const gente=personasDe(t.area);
+  const esDia=t.tipoTarea==='dia';
+  $('#dlg-in').innerHTML=`
+    <div class="eyebrow">Editar ${esDia?'tarea del día':'tarea del POE'}</div>
+    <label class="f" style="margin-top:10px"><span>La tarea <i class="req">*</i></span>
+      <input id="et-texto" maxlength="140" value="${esc(t.texto)}"></label>
+    <label class="f"><span>Agrupación</span>
+      <select id="et-cat">
+        <option value="">Sin agrupación</option>
+        ${categorias().map(cx=>`<option value="${esc(cx)}" ${t.categoria===cx?'selected':''}>${esc(cx)}</option>`).join('')}
+      </select></label>
+    <label class="f"><span>Responsable asignado</span>
+      <select id="et-resp">
+        <option value="">Sin responsable</option>
+        ${gente.map(pn=>`<option value="${esc(pn.nombre)}" ${t.resp===pn.nombre?'selected':''}>${esc(pn.nombre)}</option>`).join('')}
+      </select></label>
+    <div class="xs muted" style="margin-top:-4px">Con responsable, el sensor puede marcarla sin elegir persona: queda a cuenta del asignado.</div>
+    <div class="actions" style="margin-top:14px">
+      <button class="btn primary" id="et-guardar" style="flex:1;min-width:140px">Guardar cambios</button>
+      <button class="btn quiet" id="et-x">Cancelar</button>
+    </div>
+`;
+  abrirDlg();
+  $('#et-x').onclick=()=>$('#dlg').close();
+  $('#et-guardar').onclick=()=>{
+    const texto=($('#et-texto').value||'').trim();
+    if(!texto)return toast('Escribe la tarea');
+    const resp=$('#et-resp').value||'';
+    $('#dlg').close();
+    const vivo=DB.tareas.find(x=>x.id===tid);if(!vivo)return render();
+    vivo.texto=texto;vivo.resp=resp;          /* cambio local */
+    vivo.categoria=($('#et-cat')&&$('#et-cat').value)||'';
+    toast('Listo · se aplicará al tocar Guardar cambios');
+    return render();
+  };
+}
+function dialogoPreguntaRegistro(regId){
+  const r=DB.registros.find(x=>x.id===regId);if(!r)return;
+  const esInc=r.tipo==='incidente';
+  $('#dlg-in').innerHTML=`
+    <div class="eyebrow">Preguntar al analista</div>
+    <h2 style="margin:4px 0 10px">Sobre ${esInc?'este incidente':'esta actividad'}</h2>
+    <div class="sustento" style="margin-top:0">
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:5px">
+        ${esInc?`<span class="chip ${r.prioridad==='alta'?'rojo':(r.prioridad==='media'?'ambar':'')}">Incidente · ${r.prioridad}</span>`:'<span class="chip">Actividad</span>'}
+        <span class="chip azul">${AREAS[r.area]}</span>
+        <span class="xs mono muted" style="margin-left:auto">${fmt(r.ts)}</span>
+      </div>
+      <div class="sm">${esc((r.texto||r.transcript||'(solo adjuntos)').slice(0,180))}</div>
+    </div>
+    <label class="f" style="margin-top:12px"><span>Tu pregunta <i class="req">*</i></span>
+      <textarea id="prr-texto" rows="4" placeholder="Qué quieres que el analista revise o explique de este registro"></textarea></label>
+    <div class="actions">
+      <button class="btn primary" id="prr-enviar" style="flex:1;min-width:170px">Enviar al analista</button>
+      <button class="btn quiet" id="prr-x">Cancelar</button>
+    </div>`;
+  abrirDlg();
+  $('#prr-x').onclick=()=>$('#dlg').close();
+  $('#prr-enviar').onclick=async()=>{
+    const texto=($('#prr-texto').value||'').trim();
+    if(!texto)return toast('Escribe tu pregunta');
+    const c={id:uid(),ts:Date.now(),pregunta:texto,refRegistro:r.id,respuesta:null};
+    DB.consultas.push(c);
+    $('#dlg').close();render();
+    toast('Pregunta enviada al analista');
+    SES.guardando=true;
+    const ok=await guardarDB();
+    SES.guardando=false;
+    if(!ok){DB.consultas=DB.consultas.filter(x=>x.id!==c.id);toast('No se pudo enviar. Reintenta.');render();}
+  };
+}
+function dialogoActualizarIncidente(id){
+  const r=DB.registros.find(x=>x.id===id&&x.tipo==='incidente');if(!r)return;
+  $('#dlg-in').innerHTML=`
+    <div class="eyebrow">Seguimiento del incidente</div>
+    <div class="sustento" style="margin-top:8px">
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:4px">
+        <span class="chip ${r.prioridad==='alta'?'rojo':(r.prioridad==='media'?'ambar':'')}">${r.prioridad}</span>
+        <span class="xs mono muted" style="margin-left:auto">${fmt(r.ts)}</span>
+      </div>
+      <div class="sm">${esc((r.texto||r.transcript||'').slice(0,160))}</div>
+    </div>
+    <label class="f" style="margin-top:12px"><span>Qué pasó desde entonces <i class="req">*</i></span>
+      <textarea id="ai-texto" rows="4" placeholder="Ej.: Llegó el gasfitero, sigue cerrado el probador 2"></textarea></label>
+    <div class="actions">
+      <button class="btn primary" id="ai-ok" style="flex:1;min-width:170px">Guardar actualización</button>
+      <button class="btn quiet" id="ai-x">Cancelar</button>
+    </div>`;
+  abrirDlg();
+  $('#ai-x').onclick=()=>$('#dlg').close();
+  $('#ai-ok').onclick=async()=>{
+    const texto=($('#ai-texto').value||'').trim();
+    if(!texto)return toast('Escribe la actualización');
+    /* rebuscar por id en la base VIVA: si el sondeo reemplazó los objetos
+       mientras el diálogo estaba abierto, la referencia capturada quedó huérfana */
+    const vivo=DB.registros.find(x=>x.id===r.id);
+    if(!vivo){$('#dlg').close();toast('Este incidente ya no está en la base');return render();}
+    if(!vivo.actualizaciones)vivo.actualizaciones=[];
+    const act={ts:Date.now(),texto,persona:SES.nombre||''};
+    vivo.actualizaciones.push(act);
+    $('#dlg').close();render();
+    toast('↻ Actualización guardada · ya es el texto de la cartilla');
+    SES.guardando=true;
+    const ok=await guardarDB();
+    SES.guardando=false;
+    if(!ok){vivo.actualizaciones=vivo.actualizaciones.filter(x=>x!==act);toast('No se pudo guardar. Reintenta.');render();}
+  };
+}
+function dialogoPreguntaReporte(avisoId){
+  const a=DB.avisos.find(x=>x.id===avisoId);if(!a)return;
+  $('#dlg-in').innerHTML=`
+    <div class="eyebrow">Preguntar al analista</div>
+    <h2 style="margin:4px 0 10px">Sobre este reporte</h2>
+    <div class="sustento" style="margin-top:0">
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:5px">
+        <span class="chip azul">${esc(a.tipoAviso)}</span>
+        <span class="xs mono muted" style="margin-left:auto">${fmt(a.ts)}</span>
+      </div>
+      <div class="sm">${esc(a.texto.slice(0,180))}${a.texto.length>180?'…':''}</div>
+    </div>
+    <label class="f" style="margin-top:12px"><span>Tu pregunta <i class="req">*</i></span>
+      <textarea id="pr-texto" rows="4" placeholder="Qué quieres que el analista aclare o amplíe de este reporte"></textarea></label>
+    <div class="actions">
+      <button class="btn primary" id="pr-enviar" style="flex:1;min-width:170px">Enviar al analista</button>
+      <button class="btn quiet" id="pr-x">Cancelar</button>
+    </div>`;
+  abrirDlg();
+  $('#pr-x').onclick=()=>$('#dlg').close();
+  $('#pr-enviar').onclick=async()=>{
+    const texto=($('#pr-texto').value||'').trim();
+    if(!texto)return toast('Escribe tu pregunta');
+    const c={id:uid(),ts:Date.now(),pregunta:texto,refAviso:a.id,respuesta:null};
+    DB.consultas.push(c);
+    $('#dlg').close();render();
+    toast('Pregunta enviada al analista');
+    SES.guardando=true;
+    const ok=await guardarDB();
+    SES.guardando=false;
+    if(!ok){DB.consultas=DB.consultas.filter(x=>x.id!==c.id);toast('No se pudo enviar. Reintenta.');render();}
+  };
+}
+function dialogoAviso(id){
+  const a=DB.avisos.find(x=>x.id===id);if(!a)return;
+  pedirMedia('avi_'+a.id,a);
+  const su=a.sustento||{};
+  const refs=(a.refs&&a.refs.length?a.refs:(a.refIncidente?[a.refIncidente]:[]))
+    .map(rid=>DB.registros.find(r=>r.id===rid)).filter(Boolean);
+  $('#dlg-in').innerHTML=`
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span class="chip ${a.origen==='sistema'?'rojo':'azul'}">${esc(a.tipoAviso)}</span>
+      ${a.origen==='sistema'?'<span class="chip">Alerta automática</span>':(a.fuente?`<span class="chip">${FUENTES[a.fuente]||a.fuente}</span>`:'')}
+      <span class="xs mono muted" style="margin-left:auto">${fmt(a.ts)}</span>
+    </div>
+    <div class="sm" style="margin:12px 0;white-space:pre-wrap">${esc(a.texto)}</div>
+
+    ${a.origen!=='sistema'?`<div class="sustento">
+      <div class="eyebrow">Datos usados para este reporte</div>
+      ${su.fuente==='tareas'&&su.tareas?su.tareas.map(t=>`<div class="kv"><span>${AREAS[t.area]||t.area}</span><b>${t.total?t.done+' de '+t.total+' ('+t.pct+'%)':'sin tareas'}</b></div>`).join('')
+        +`<div class="xs muted" style="margin-top:6px">Cumplimiento del POE del ${su.fecha||''}.</div>`
+      :su.fuente==='actividad'?`<div class="kv"><span>Registros citados</span><b>${refs.length}</b></div>
+        <div class="kv"><span>Base al momento del envío</span><b>${su.nBase??'—'} registro(s)</b></div>`
+      :`<div class="kv"><span>Registros analizados (7 días)</span><b>${su.total7??'—'}</b></div>
+        <div class="kv"><span>Incidentes en el periodo</span><b>${su.incidentes7??'—'}</b></div>
+        ${su.porArea?Object.keys(AREAS).map(k=>`<div class="kv"><span>${AREAS[k]}</span><b>${su.porArea[k]||0}</b></div>`).join(''):''}`}
+    </div>`:''}
+    ${refs.length?`<div class="eyebrow" style="margin:14px 0 6px">Registros citados</div>
+      ${refs.map(r=>`<div style="border:1px solid var(--line-2);border-radius:10px;padding:9px 11px;margin-bottom:7px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          ${r.tipo==='incidente'?`<span class="chip ${r.prioridad==='alta'?'rojo':(r.prioridad==='media'?'ambar':'')}">Incidente · ${r.prioridad}</span>`:'<span class="chip">Actividad</span>'}
+          <span class="chip azul">${AREAS[r.area]}</span>
+          <span class="xs mono muted" style="margin-left:auto">${fmt(r.ts)}</span>
+        </div>
+        <div class="sm" style="margin-top:5px">${esc(r.texto||r.transcript||'(solo adjuntos)')}</div>
+      </div>`).join('')}`:''}
+    <div id="dlg-media-x">${mediaDe('avi_'+a.id,a)}</div>
+    <div class="actions">
+      ${a.refIncidente?`<button class="btn" id="dlg-irinc">Ver el incidente</button>`:''}
+      ${a.leido?'':`<button class="btn" id="dlg-leido">Marcar leída</button>`}
+      <button class="btn quiet" id="dlg-x2">Cerrar</button>
+    </div>`;
+  $('#dlg').showModal();
+  $('#dlg-x2').onclick=()=>$('#dlg').close();
+  if($('#dlg-irinc'))$('#dlg-irinc').onclick=()=>{$('#dlg').close();dialogoIncidente(a.refIncidente);};
+  if($('#dlg-leido'))$('#dlg-leido').onclick=async()=>{a.leido=true;await guardarDB();$('#dlg').close();render();};
+}
+async function reiniciarPlataforma(){
+  try{
+    if(BASE==='servidor'){
+      const r=await fetch('api/db',{method:'DELETE'});
+      if(!r.ok)throw new Error('servidor '+r.status);
+      const j=await r.json();
+      DB=VACIA_DB();
+      MEDIA.clear();
+      toast('Plataforma reiniciada'+(j.adjuntosBorrados?' · '+j.adjuntosBorrados+' adjunto(s) eliminados':''));
+    }else{
+      DB=VACIA_DB();
+      MEDIA.clear();
+      await guardarDB();
+      toast('Plataforma reiniciada');
+    }
+    SES.filtro='';SES.filtroTipo='';SES.avisoRefs=new Set();
+    render();
+  }catch(e){toast('No se pudo reiniciar: '+String(e.message||e));}
+}
+function dialogoReinicio(){
+  const n=DB.registros.length, i=DB.registros.filter(r=>r.tipo==='incidente').length;
+  $('#dlg-in').innerHTML=`
+    <div class="eyebrow" style="color:var(--rojo)">Acción irreversible</div>
+    <h2 style="margin:4px 0 10px">Reiniciar la plataforma</h2>
+    <div class="sm">Se borran de la base compartida <b>${n} registro(s)</b> (${i} incidente(s)), sus fotos y audios,
+      las tareas fijas, las consultas y los avisos. La plataforma queda como recién instalada, para salir a campo con los datos limpios.</div>
+    <div class="sm" style="margin-top:10px"><b>Esto afecta a todos los dispositivos</b>, no solo a este. No se puede deshacer.</div>
+    ${n?`<div class="aviso-lig" style="margin-top:10px"><div class="eyebrow">Antes de borrar</div>
+      Si aún no lo hiciste, descarga los datos: el botón de al lado guarda todo en tu computadora.</div>`:''}
+    <label class="f" style="margin-top:14px"><span>Escribe BORRAR para confirmar</span>
+      <input id="rst-txt" autocomplete="off" placeholder="BORRAR"></label>
+    <div class="actions">
+      <button class="btn" id="rst-cancel">Cancelar</button>
+      <button class="btn primary" id="rst-ok" style="background:var(--rojo);border-color:var(--rojo)">Borrar todo</button>
+    </div>`;
+  $('#dlg').showModal();
+  $('#rst-cancel').onclick=()=>$('#dlg').close();
+  $('#rst-ok').onclick=async()=>{
+    if(($('#rst-txt').value||'').trim().toUpperCase()!=='BORRAR')return toast('Escribe BORRAR para confirmar');
+    $('#dlg').close();
+    await reiniciarPlataforma();
+  };
+}
+
+function vAnBase(){
+  const todos=lista().filter(r=>(!SES.filtro||r.area===SES.filtro)&&(!SES.filtroTipo||r.tipo===SES.filtroTipo)).sort((a,b)=>b.ts-a.ts);
+  return `<div class="card">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <h1 style="flex:1;margin:0">Base de registros</h1>
+      <span class="vivo"><i></i>EN VIVO · <span id="vivo-t">hace 0 s</span></span>
+    </div>
+    <div class="sm muted" style="margin-top:4px">Solo lectura. Es la única fuente para tus análisis y avisos. Desde cada incidente puedes abrir un análisis vinculado.</div></div>
+  <div class="fchips">
+    <button data-fa="" aria-pressed="${SES.filtro===''}">Todas las áreas</button>
+    ${Object.keys(AREAS).map(a=>`<button data-fa="${a}" aria-pressed="${SES.filtro===a}">${AREAS[a]}</button>`).join('')}
+  </div>
+  <div class="fchips">
+    <button data-ft="" aria-pressed="${SES.filtroTipo===''}">Todo</button>
+    <button data-ft="incidente" aria-pressed="${SES.filtroTipo==='incidente'}">Incidentes</button>
+    <button data-ft="actividad" aria-pressed="${SES.filtroTipo==='actividad'}">Actividades</button>
+  </div>
+  ${todos.length?todos.map(r=>cardReg(r,{analizar:r.tipo==='incidente'})).join(''):'<div class="empty">La base está vacía o no hay registros con estos filtros.</div>'}
+  <div class="card" style="margin-top:18px">
+    <div class="eyebrow" style="margin-bottom:6px">Cierre de sesión de trabajo</div>
+    <div class="sm muted">Descarga todo lo acumulado antes de reiniciar. Sirve para dejar la plataforma limpia
+      después de las pruebas y salir a campo sin datos falsos mezclados.</div>
+    <div class="actions">
+      <button class="btn primary" id="bs-descargar" ${DB.registros.length?'':'disabled'}>Descargar todos los datos (${DB.registros.length})</button>
+      <button class="btn" id="bs-reiniciar" style="color:var(--rojo);border-color:#F3D3CE">Reiniciar la plataforma</button>
+    </div>
+  </div>`;
+}
+
+
+
+/* =====================================================================
+   NAVEGACIÓN
+   ===================================================================== */
+const TABS={
+  sensor:[['reportar','Registrar'],['fijas','Tareas fijas']],
+  emprendedor:[['diaria','Actividad diaria'],['fijas','Tareas fijas'],['analista','Reporte analista']],
+  analista:[['consultas','Consultas'],['aviso','Enviar reporte'],['chat','Chat con Claude'],['base','Base de registros']]
+};
+function badges(k){
+  if(SES.perfil==='emprendedor'){
+    if(k==='diaria')return incidentes().filter(r=>r.estado!=='resuelto'&&r.prioridad==='alta').length;
+    if(k==='analista')return DB.avisos.filter(a=>!a.leido).length;
+  }
+  if(SES.perfil==='sensor'&&k==='fijas'){
+    const av=avanceArea(SES.area,hoyIso());
+    const dia=tareasDiaVisibles(SES.area,hoyIso()).filter(t=>!hecha(t.id,hoyIso())).length;
+    return (av.total-av.done)+dia;
+  }
+  if(SES.perfil==='analista'&&k==='consultas')return DB.consultas.filter(c=>!c.respuesta&&!c.eliminada).length;
+  return 0;
+}
+function render(){
+  document.body.dataset.perfil=SES.perfil||'';
+  if(!SES.perfil)return;
+  const tabs=TABS[SES.perfil];
+  if(!SES.tab)SES.tab=tabs[0][0];
+  $('#switch').classList.toggle('hide',!!SES.fijo);
+  $('#uav').textContent=SES.perfil==='sensor'?AV[SES.area]:(SES.perfil==='analista'?'A':'E');
+  $('#uwho').textContent=SES.perfil==='sensor'?SES.nombre+' · '+SENSOR[SES.area]
+    :(SES.perfil==='analista'?'Analista · '+SES.nombre:'Emprendedor');
+  const esEmp=SES.perfil==='emprendedor';
+  $('#tabs').innerHTML=(esEmp||tabs.length<2)?'':tabs.map(t=>{const b=badges(t[0]);
+    return `<button data-tab="${t[0]}" aria-current="${t[0]===SES.tab}">${t[1]}${b?' · '+b:''}</button>`}).join('');
+  const ICONOS={
+    diaria:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+    fijas:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>',
+    analista:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="13" y2="13"/></svg>'};
+  const ETQ={diaria:'Actividad',fijas:'Tareas',analista:'Analista'};
+  $('#bnav').classList.toggle('hide',!esEmp);
+  if(esEmp){
+    $('#bnav').innerHTML=tabs.map(t=>{const b=badges(t[0]);
+      return `<button data-tab="${t[0]}" aria-current="${t[0]===SES.tab}">
+        ${ICONOS[t[0]]||''}${b?`<span class="bdg">${b}</span>`:''}
+        <span class="bl">${ETQ[t[0]]||t[1]}</span>
+      </button>`}).join('');
+  }
+  const V={'sensor/reportar':vSensor,'sensor/fijas':vSensorFijas,
+    'emprendedor/diaria':vEmpDiaria,'emprendedor/fijas':vEmpFijas,'emprendedor/analista':vEmpAnalista,
+    'analista/consultas':vAnConsultas,'analista/aviso':vAnAviso,'analista/chat':vAnChat,'analista/base':vAnBase};
+  $('#view').innerHTML=BASE==='sinConexion'?pantallaSinBase():V[SES.perfil+'/'+SES.tab]();
+  const _cs=$('#chat-scroll');if(_cs)_cs.scrollTop=_cs.scrollHeight;
+  SES.nuevas.clear();
+  if(SES.perfil!=='sensor')cargarMediaPendiente();
+}
+/* enlace directo: ?perfil=emprendedor entra sin selector y sin acceso a otros perfiles */
+function perfilDeEnlace(){
+  try{
+    const q=new URLSearchParams(location.search).get('perfil')||location.hash.replace('#','');
+    return ['emprendedor','analista','sensor'].includes(q)?q:null;
+  }catch(e){return null}
+}
+async function entrar(perfil){
+  SES.perfil=perfil;SES.tab=null;SES.verConsulta=null;SES.avisoRefs=new Set();SES.avisoFuente='proactivo';SES.avisoFiltroArea='';
+  $('#gate').classList.add('hide');$('#app').classList.remove('hide');
+  window.scrollTo(0,0);
+  await cargarDB();
+  SES.ultRefresco=Date.now();
+  if(perfil==='emprendedor'){DB.consultas.forEach(c=>{if(c.respuesta)c.vista=true});}
+  render();
+}
+
+/* =====================================================================
+   EVENTOS
+   ===================================================================== */
+/* arranque: si el enlace trae perfil, se salta la pantalla de selección */
+(function arranque(){
+  const p=perfilDeEnlace();
+  if(p==='emprendedor'){SES.fijo=true;entrar('emprendedor');}
+})();
+
+document.addEventListener('click',async e=>{
+  const img=e.target.closest('img[data-verfoto],img[data-ampliar]');
+  if(img){
+    $('#dlg-in').innerHTML=`<img class="full" src="${img.src}" alt="Foto del registro"><div class="actions"><button class="btn" id="dlg-x">Cerrar</button></div>`;
+    $('#dlg').showModal();$('#dlg-x').onclick=()=>$('#dlg').close();return;
+  }
+  const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+
+  /* gate */
+  if(d.g==='sensor'){$('#g1').classList.add('hide');$('#g2').classList.remove('hide');return;}
+  if(d.g==='analista'){$('#g1').classList.add('hide');$('#g3').classList.remove('hide');return;}
+  if(d.g==='emprendedor')return entrar('emprendedor');
+  if(d.back){$('#g2').classList.add('hide');$('#g3').classList.add('hide');$('#g1').classList.remove('hide');return;}
+  if(d.sensor){const n=$('#g-nombre').value.trim();if(!n)return toast('Escribe tu nombre debajo de los sensores');
+    SES.area=d.sensor;SES.nombre=n;return entrar('sensor');}
+  if(b.id==='g-entrar-an'){const n=$('#g-nombre-an').value.trim();if(!n)return toast('Escribe tu nombre');
+    SES.nombre=n;return entrar('analista');}
+  if(b.id==='reconectar')return reconectar();
+  if(b.id==='switch'){
+    if(SES.fijo)return;
+    if(DRAFT.grabando)detenerGrabacion();
+    SES.perfil=null;document.body.dataset.perfil='';
+    $('#app').classList.add('hide');$('#gate').classList.remove('hide');
+    $('#g2').classList.add('hide');$('#g3').classList.add('hide');$('#g1').classList.remove('hide');window.scrollTo(0,0);return;}
+  if(d.tab){SES.tab=d.tab;SES.verConsulta=null;window.scrollTo(0,0);return render();}
+
+  /* sensor */
+  if(d.tipo){DRAFT.texto=$('#s-texto')?$('#s-texto').value:DRAFT.texto;DRAFT.tipo=d.tipo;return render();}
+  if(d.prio){DRAFT.texto=$('#s-texto')?$('#s-texto').value:DRAFT.texto;DRAFT.prioridad=d.prio;return render();}
+  if(b.id==='s-grabar')return iniciarGrabacion();
+  if(b.id==='s-stop')return detenerGrabacion();
+  if(b.id==='s-regrabar'){DRAFT.audio=null;return render();}
+  if(d.qfoto!=null){DRAFT.texto=$('#s-texto').value;DRAFT.fotos.splice(Number(d.qfoto),1);return render();}
+  if(b.id==='s-enviar')return enviarRegistro();
+
+  /* filtros compartidos */
+  if(d.fa!=null){SES.filtro=d.fa;SES.actLim=10;return render();}
+  if(d.per==='rango')return dialogoRangoFechas();
+  if(d.per){SES.empPeriodo=d.per;SES.actLim=10;SES.incTodos=false;return render();}
+  if(b.id==='inc-vermas'){SES.incTodos=!SES.incTodos;return render();}
+  if(d.descper){SES.empDescPer=d.descper;return render();}
+  if(b.id==='act-mas'){SES.actLim=(SES.actLim||10)+10;return render();}
+  if(d.ft!=null){SES.filtroTipo=d.ft;return render();}
+
+  /* enlace directo */
+  if(b.id==='copiar-enlace'){
+    const url=location.origin+location.pathname+'?perfil=emprendedor';
+    return navigator.clipboard.writeText(url).then(()=>toast('Enlace copiado')).catch(()=>toast(url));
+  }
+
+  /* tareas fijas · sensor */
+  if(b.id==='pers-editar'){SES.editandoPersonas=!SES.editandoPersonas;return render();}
+  if(d.pers){SES.personaSel=SES.personaSel===d.pers?null:d.pers;return render();}
+  if(b.id==='pers-add'){
+    $('#dlg-in').innerHTML=`<div class="eyebrow">${AREAS[SES.area]}</div>
+      <h2 style="margin:4px 0 10px">Agregar persona</h2>
+      <label class="f"><span>Nombre <i class="req">*</i></span><input id="pn" placeholder="Nombre y apellido"></label>
+      <div class="actions"><button class="btn primary" id="pn-ok">Agregar</button>
+      <button class="btn quiet" id="pn-x">Cancelar</button></div>`;
+    $('#dlg').showModal();
+    $('#pn-x').onclick=()=>$('#dlg').close();
+    $('#pn-ok').onclick=async()=>{
+      const n=($('#pn').value||'').trim();
+      if(!n)return toast('Escribe el nombre');
+      $('#dlg').close();
+      await guardarLista(()=>DB.personas.push({id:uid(),area:SES.area,nombre:n,ts:Date.now()}));
+      toast(n+' agregado(a) al área');
+    };
+    return;
+  }
+  if(d.persdel){
+    const per=DB.personas.find(x=>x.id===d.persdel);if(!per)return;
+    if(!b.dataset.sure){b.dataset.sure='1';b.textContent='✓?';setTimeout(()=>{b.removeAttribute('data-sure');b.textContent='✕'},3000);return;}
+    if(SES.personaSel===per.nombre)SES.personaSel=null;
+    return guardarLista(()=>{per.eliminada=true});
+  }
+  if(d.tcheck){
+    if(SES.perfil!=='sensor')return;   /* solo los sensores marcan; el emprendedor es visualizador */
+    const t=DB.tareas.find(x=>x.id===d.tcheck);if(!t)return;
+    if(t.tipoTarea==='dia')return marcarTarea(t.id,SES.area,hoyIso(),SES.personaSel||t.resp||'');
+    const gente=personasDe(SES.area);
+    if(gente.length&&!SES.personaSel&&!hecha(t.id,hoyIso())){
+      if(t.resp)return marcarTarea(t.id,SES.area,hoyIso(),t.resp);  /* asignada por el emprendedor */
+      return toast('Primero toca quién la hizo');
+    }
+    return marcarTarea(t.id,SES.area,hoyIso(),SES.personaSel||'');
+  }
+  if(b.id==='tar-editar'){SES.editandoTareas=!SES.editandoTareas;return render();}
+  if(b.id==='tar-add'){
+    const txt=($('#tar-nueva').value||'').trim();
+    if(!txt)return toast('Escribe la tarea');
+    const orden=(tareasDe(SES.area).slice(-1)[0]||{orden:0}).orden+1;
+    return guardarLista(()=>DB.tareas.push({id:uid(),area:SES.area,texto:txt,orden,ts:Date.now()}));
+  }
+  if(d.tdel){
+    const t=DB.tareas.find(x=>x.id===d.tdel);if(!t)return;
+    return guardarLista(()=>{t.eliminada=true});
+  }
+  if(d.tsube||d.tbaja){
+    const id=d.tsube||d.tbaja, ts=tareasDe(SES.area), i=ts.findIndex(t=>t.id===id);
+    const j=d.tsube?i-1:i+1;
+    if(i<0||j<0||j>=ts.length)return;
+    return guardarLista(()=>{const a=ts[i].orden||i,b2=ts[j].orden||j;ts[i].orden=b2;ts[j].orden=a;});
+  }
+  if(d.goscroll){const el=document.getElementById(d.goscroll);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});return;}
+  if(d.gotab){SES.tab=d.gotab;window.scrollTo(0,0);return render();}
+
+  if(b.id==='emp-editar'){
+    /* entrar a edición: se toma una foto de las tareas; nada viaja al servidor
+       hasta Guardar cambios */
+    SES.empEdit=true;
+    SES.empEditBk=JSON.stringify({tareas:DB.tareas});
+    SES.empDel=new Set();
+    return render();
+  }
+  if(b.id==='emp-cancelar'){
+    if(SES.empEditBk)DB.tareas=JSON.parse(SES.empEditBk).tareas;
+    SES.empEdit=false;SES.empDel=new Set();SES.empEditBk=null;
+    toast('Cambios descartados');
+    return render();
+  }
+  if(b.id==='emp-guardar'){
+    const del=SES.empDel||new Set();
+    DB.tareas.forEach(t=>{if(del.has(t.id))t.eliminada=true});
+    SES.empEdit=false;render();
+    SES.guardando=true;
+    const ok=await guardarDB();
+    SES.guardando=false;
+    if(!ok){
+      if(SES.empEditBk)DB.tareas=JSON.parse(SES.empEditBk).tareas;
+      SES.empEdit=true;SES.empDel=del;
+      toast('No se pudo guardar. Sigues en edición: reintenta.');
+      return render();
+    }
+    SES.empDel=new Set();SES.empEditBk=null;
+    toast('Cambios guardados · el equipo ya los ve');
+    return render();
+  }
+  if(d.anfquitar!=null){SES.anDraft=$('#an-texto')?$('#an-texto').value:SES.anDraft;(SES.anFotos||[]).splice(Number(d.anfquitar),1);return render();}
+  if(d.avfquitar!=null){(SES.avFotos||[]).splice(Number(d.avfquitar),1);return render();}
+  if(d.eted)return dialogoEditarTarea(d.eted);
+  if(d.etsube||d.etbaja){
+    /* mover: cambio local; se confirma con Guardar cambios */
+    const tid=d.etsube||d.etbaja;
+    const t=DB.tareas.find(x=>x.id===tid);if(!t)return;
+    const lista=tareasDe(t.area);
+    const ix=lista.findIndex(x=>x.id===tid);
+    const j=d.etsube?ix-1:ix+1;
+    if(ix<0||j<0||j>=lista.length)return;
+    const otro=lista[j];
+    const o=t.orden;t.orden=otro.orden;otro.orden=o;
+    return render();
+  }
+  if(d.etdel){
+    /* un solo toque: marca (o desmarca) la eliminación; se aplica al guardar */
+    if(!SES.empDel)SES.empDel=new Set();
+    if(SES.empDel.has(d.etdel))SES.empDel.delete(d.etdel);
+    else SES.empDel.add(d.etdel);
+    return render();
+  }
+  if(d.areadet){
+    if(SES.empEdit&&SES.empEditBk)DB.tareas=JSON.parse(SES.empEditBk).tareas;
+    SES.empEdit=false;SES.empDel=new Set();SES.empEditBk=null;
+    SES.areaDetalle=d.areadet;window.scrollTo(0,0);return render();}
+  if(b.id==='fij-volver'){SES.areaDetalle=null;return render();}
+
+  /* descarga del emprendedor: todo, sin filtros */
+  if(b.id==='emp-csv'||b.id==='emp-json'){
+    const dp=SES.empDescPer||'hoy';
+    const rs=DB.registros.filter(r=>dp==='todo'||enPeriodo(r.ts,dp)).sort((a,b2)=>a.ts-b2.ts);
+    if(!rs.length)return toast('No hay registros en ese periodo');
+    try{
+      const sello=(dp==='hoy'?'hoy_':(dp==='semana'?'semana_':'todo_'))+selloArchivo();
+      if(b.id==='emp-csv'){
+        descargar('fuse-ops_'+sello+'.csv',csvDe(rs,';'),'text/csv');
+        toast(rs.length+' registro(s) descargados');
+      }else{
+        descargar('fuse-ops_'+sello+'.json',JSON.stringify({exportado:new Date().toISOString(),
+          periodo:dp,totalRegistros:rs.length,registros:rs,avisos:DB.avisos,consultas:DB.consultas,
+          tareas:DB.tareas,personas:DB.personas,checks:DB.checks},null,2),'application/json');
+        toast('Respaldo descargado ('+(dp==='todo'?'todo':dp)+')');
+      }
+    }catch(e){toast('No se pudo generar el archivo: '+String(e.message||e));}
+    return;
+  }
+
+  /* chat con claude */
+  if(b.id==='ch-enviar')return enviarChat();
+  if(b.id==='ch-limpiar'){SES.chat=[];SES.chatDraft='';return render();}
+  if(d.chsug){SES.chatDraft=d.chsug;return enviarChat();}
+  if(d.copiar!=null){
+    const m=(SES.chat||[])[Number(d.copiar)];
+    if(!m)return;
+    return navigator.clipboard.writeText(m.content)
+      .then(()=>toast('Respuesta copiada'))
+      .catch(()=>toast('No se pudo copiar automáticamente; selecciona el texto y copia manual.'));
+  }
+
+  if(b.id==='bs-descargar')return dialogoDescarga();
+  if(b.id==='bs-reiniciar')return dialogoReinicio();
+  if(d.sugerida){$('#q-texto').value=d.sugerida;return;}
+  if(b.id==='q-enviar'){
+    const q=$('#q-texto').value.trim();if(!q)return toast('Escribe la pregunta');
+    DB.consultas.push({id:uid(),ts:Date.now(),pregunta:q,respuesta:null});
+    if(!(await guardarDB())){DB.consultas.pop();return toast('No se pudo enviar. Reintenta.');}
+    toast('Pregunta enviada al analista · '+fmt(Date.now()));return render();
+  }
+  if(d.veraviso)return dialogoAviso(d.veraviso);
+  if(d.pregrep)return dialogoPreguntaReporte(d.pregrep);
+  if(d.qdel)return dialogoEliminarPregunta(d.qdel);
+  if(b.id==='emp-agrtarea')return dialogoAgregarTarea({tipo:'dia',area:SES.areaDetalle||Object.keys(AREAS)[0],fija:true,resp:'',texto:'',cat:''});
+  if(d.actinc)return dialogoActualizarIncidente(d.actinc);
+  if(d.verresp)return dialogoRespuesta(d.verresp);
+  if(d.leido){const a=DB.avisos.find(x=>x.id===d.leido);if(a){a.leido=true;await guardarDB();render();}return;}
+  if(b.id==='ver-listado')return dialogoListado();
+  if(d.abririnc)return dialogoIncidente(d.abririnc);
+  if(d.verinc){SES.tab='diaria';render();window.scrollTo(0,0);return dialogoIncidente(d.verinc);}
+
+  /* analista */
+  if(d.abrir){SES.verConsulta=d.abrir;SES.anDraft='';SES.iaBorrador=null;SES.anFotos=[];SES.avisoFuente='proactivo';SES.avisoRefs=new Set();SES.avisoFiltroArea='';window.scrollTo(0,0);return render();}
+  if(b.id==='an-volver'){SES.verConsulta=null;return render();}
+  if(b.id==='an-ia'){
+    const c=DB.consultas.find(x=>x.id===SES.verConsulta&&!x.eliminada);if(!c)return;
+    if(SES.iaCargandoResp)return;
+    SES.iaCargandoResp=true;render();
+    try{
+      const refA=c.refAviso&&DB.avisos.find(a=>a.id===c.refAviso);
+      const refR=c.refRegistro&&DB.registros.find(x=>x.id===c.refRegistro);
+      let contexto='Pregunta del emprendedor: "'+c.pregunta+'"';
+      if(refR)contexto+='\nLa pregunta es sobre este registro: ['+(refR.tipo==='incidente'?'INCIDENTE '+(refR.prioridad||''):'ACTIVIDAD')+' · '+(AREAS[refR.area]||refR.area)+' · '+fmt(refR.ts)+'] '+(refR.texto||refR.transcript||'')+((refR.actualizaciones&&refR.actualizaciones.length)?' | Seguimiento: '+refR.actualizaciones.map(x=>hhmm(x.ts)+' '+x.texto).join(' → '):'');
+      if(refA)contexto+='\nLa pregunta es sobre este reporte tuyo: ['+refA.tipoAviso+' · '+fmt(refA.ts)+'] '+refA.texto;
+      contexto+='\n\nRedacta un BORRADOR de respuesta del analista al emprendedor: breve (3-6 oraciones), en texto plano, citando horas/áreas concretas de la base cuando aporten, con una recomendación accionable si corresponde. Sin saludos ni despedidas.';
+      const r=await fetch('api/ia',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({sistema:baseParaChat(),mensajes:[{role:'user',content:contexto}]})});
+      const j=await r.json().catch(()=>null);
+      if(r.ok&&j&&j.texto){
+        SES.anDraft=j.texto;
+        SES.iaBorrador={cid:c.id,texto:j.texto};
+        toast('Borrador listo · edítalo o publícalo tal cual');
+      }else if(j&&j.error==='sin_clave'){
+        toast('El chat con Claude aún no está conectado (falta la API key en Vercel)');
+      }else{
+        toast('Claude no pudo redactar: '+((j&&j.detalle)||'error de conexión'));
+      }
+    }catch(e){toast('Sin conexión con el servidor. Reintenta.');}
+    SES.iaCargandoResp=false;
+    return render();
+  }
+  if(b.id==='an-publicar'){
+    const c=DB.consultas.find(x=>x.id===d.c);if(!c)return;
+    const texto=$('#an-texto').value.trim(),firma=SES.nombre||'Analista';
+    if(!texto)return toast('Escribe la respuesta');
+    const previa=c.respuesta;
+    const su=sustentoActual();
+    /* autoría: humano (sin IA) · ia (borrador de Claude sin tocar) · mixta (Claude + edición).
+       Se guarda también el borrador original para poder medir después cuánto aportó el analista. */
+    const bIA=(SES.iaBorrador&&SES.iaBorrador.cid===c.id)?SES.iaBorrador.texto:null;
+    const autoria=!bIA?'humano':(texto.trim()===bIA.trim()?'ia':'mixta');
+    const fotosR=(SES.anFotos||[]).slice(0,3);
+    c.respuesta={ts:Date.now(),texto,firma,nBase:DB.registros.length,
+      fuente:su.fuente,sustento:su,refs:su.refs||[],
+      autoria,...(bIA?{iaBorrador:bIA}:{}),
+      ...(fotosR.length?{nFotos:fotosR.length}:{})};c.vista=false;
+    if(fotosR.length){
+      const okM=await sSet(K_MEDIA+'resp_'+c.id,{fotos:fotosR,audio:null});
+      if(!okM)c.respuesta.mediaPerdida=true;
+      else MEDIA.set('resp_'+c.id,{fotos:fotosR,audio:null});
+    }
+    if(!(await guardarDB())){c.respuesta=previa;return toast('No se pudo publicar. Reintenta.');}
+    SES.verConsulta=null;SES.anDraft='';SES.iaBorrador=null;SES.anFotos=[];
+    toast('Respuesta publicada · el emprendedor ya la ve');return render();
+  }
+  if(d.analizar){SES.avisoFuente='actividad';SES.avisoRefs=new Set([d.analizar]);SES.tab='aviso';window.scrollTo(0,0);return render();}
+  if(d.avfuente){SES.avisoFuente=d.avfuente;return render();}
+  if(d.avf!=null){SES.avisoFiltroArea=d.avf;return render();}
+  if(b.id==='av-limpiar-sel'){SES.avisoRefs=new Set();return render();}
+  if(b.id==='av-enviar'){
+    const texto=$('#av-texto').value.trim(),firma=SES.nombre||'Analista';
+    let tipo=$('#av-tipo').value;
+    if(tipo==='__otro'){
+      tipo=($('#av-tipo-otro').value||'').trim();
+      if(!tipo)return toast('Escribe el título del reporte');
+    }
+    if(!texto)return toast('Escribe el contenido del reporte');
+    const su=sustentoActual();
+    const refs=su.refs||[];
+    const primerInc=refs.map(id=>DB.registros.find(r=>r.id===id)).find(r=>r&&r.tipo==='incidente');
+    const fotosA=(SES.avFotos||[]).slice(0,3);
+    const aviso={id:uid(),ts:Date.now(),origen:'analista',tipoAviso:tipo,texto,firma,
+      fuente:su.fuente,sustento:su,refs,
+      refIncidente:primerInc?primerInc.id:null,leido:false,
+      ...(fotosA.length?{nFotos:fotosA.length}:{})};
+    if(fotosA.length){
+      const okM=await sSet(K_MEDIA+'avi_'+aviso.id,{fotos:fotosA,audio:null});
+      if(!okM)aviso.mediaPerdida=true;
+      else MEDIA.set('avi_'+aviso.id,{fotos:fotosA,audio:null});
+    }
+    DB.avisos.push(aviso);
+    if(!(await guardarDB())){DB.avisos.pop();return toast('No se pudo enviar. Reintenta.');}
+    SES.avisoRefs=new Set();SES.avisoFuente='proactivo';SES.avFotos=[];
+    toast('Reporte enviado al emprendedor');return render();
+  }
+});
+document.addEventListener('change',async e=>{
+  if((e.target.id==='an-foto'||e.target.id==='av-foto')&&e.target.files&&e.target.files[0]){
+    const cual=e.target.id==='an-foto'?'anFotos':'avFotos';
+    if(e.target.id==='an-foto')SES.anDraft=$('#an-texto')?$('#an-texto').value:SES.anDraft;
+    const archivo=e.target.files[0];
+    e.target.value='';
+    const data=await comprimirFoto(archivo);
+    if(data){if(!SES[cual])SES[cual]=[];SES[cual].push(data);}
+    else toast('No se pudo procesar esa imagen.');
+    render();return;
+  }
+  if(e.target.id==='s-foto'&&e.target.files&&e.target.files[0]){
+    DRAFT.texto=$('#s-texto').value;
+    const archivo=e.target.files[0];
+    e.target.value='';   /* permite volver a elegir la misma foto */
+    const data=await comprimirFoto(archivo);
+    if(data)DRAFT.fotos.push(data);
+    else toast('No se pudo procesar esa imagen. Prueba tomándola directo con la cámara.');
+    render();return;
+  }
+  const d=e.target.dataset;
+  if(d.estado){
+    const r=DB.registros.find(x=>x.id===d.estado);if(!r)return;
+    const previo=r.estado;r.estado=e.target.value;
+    if(await guardarDB())toast('Incidente marcado como '+r.estado);
+    else{r.estado=previo;toast('No se pudo guardar el cambio. Reintenta.');}
+    render();return;
+  }
+});
+document.addEventListener('change',async e=>{
+  if(e.target.id==='av-tipo'){
+    const w=$('#av-tipo-otro-wrap');
+    if(w)w.classList.toggle('hide',e.target.value!=='__otro');
+    return;
+  }
+  const rsel=e.target.dataset&&e.target.dataset.refsel;
+  if(rsel){const set=refsSel();if(e.target.checked)set.add(rsel);else set.delete(rsel);render();return;}
+  const t=e.target.dataset&&e.target.dataset.tedit;
+  if(t){
+    const tar=DB.tareas.find(x=>x.id===t);
+    const v=(e.target.value||'').trim();
+    if(tar&&v&&v!==tar.texto)await guardarLista(()=>{tar.texto=v});
+    return;
+  }
+},true);
+document.addEventListener('keydown',e=>{
+  if(e.target&&e.target.id==='ch-texto'&&e.key==='Enter'&&!e.shiftKey){
+    e.preventDefault();enviarChat();
+  }
+});
+document.addEventListener('input',e=>{
+  if(e.target.id==='an-texto'){SES.anDraft=e.target.value;return;}
+  if(e.target.id==='ch-texto'){SES.chatDraft=e.target.value;return;}
+  if(e.target.id==='s-texto')DRAFT.texto=e.target.value;
+  if(e.target.id==='s-transc')DRAFT.transcript=e.target.value;
+});
+</script>
